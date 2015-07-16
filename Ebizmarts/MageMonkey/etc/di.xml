@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+    <!--type name="Magento\Framework\Module\Updater\SetupFactory">
+        <arguments>
+            <argument name="resourceTypes" xsi:type="array">
+                <item name="magemonkey_setup" xsi:type="string">Magento\Framework\Module\DataSetup</item>
+            </argument>
+        </arguments>
+    </type-->
+    <type name="Ebizmarts\MageMonkey\Model\Logger\Handler\System">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Ebizmarts\MageMonkey\Model\Logger\Magemonkey">
+        <arguments>
+            <argument name="name" xsi:type="string">main</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">Ebizmarts\MageMonkey\Model\Logger\Handler\System</item>
+                <item name="debug" xsi:type="object">Magento\Framework\Logger\Handler\Debug</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Ebizmarts\MageMonkey\Model\Logger\Handler\StreamHandler">
+        <arguments>
+            <argument name="stream" xsi:type="string">var/log/MageMonkey.log</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Newsletter\Model\Subscriber">
+        <plugin name="magemonkey-subscriber" type="Ebizmarts\MageMonkey\Model\Plugin\Subscriber" sortOrder="10"/>
+    </type>
+
+</config>
