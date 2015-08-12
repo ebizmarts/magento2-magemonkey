@@ -31,4 +31,8 @@
         <plugin name="magemonkey-subscriber" type="Ebizmarts\MageMonkey\Model\Plugin\Subscriber" sortOrder="10"/>
     </type>
 
+    <!--<type name="Magento\Config\Model\Config">
+        <plugin name="magemonkey-save" type="Ebizmarts\MageMonkey\Model\Plugin\Config" sortOrder="10"/>
+    </type>-->
+
 </config>

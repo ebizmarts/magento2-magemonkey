@@ -56,6 +56,8 @@ class MCAPI
     }
     public function callServer($use = 'GET',$method = null, $params = null,$fields = null)
     {
+        $dc = '';
+        $key = '';
         if(strstr($this->_apiKey,'-'))
         {
             list($key,$dc)  = explode('-',$this->_apiKey);
@@ -175,4 +177,7 @@ class MCAPI
     {
         return $this->callServer('DELETE','lists',array(0=>$listId,'members'=>$memberId));
     }
+    /*public function listWebhookAdd(){
+
+    }*/
 }

@@ -27,13 +27,15 @@ class Monkeylist implements \Magento\Framework\Option\ArrayInterface
     }
     public function toOptionArray()
     {
-        if($this->_options) {
+        if(isset($this->_options->lists)) {
             $rc = array();
             foreach($this->_options->lists as $list)
             {
                 $rc[] = array('value'=>$list->id,'label'=>$list->name);
             }
             return $rc;
+        }else{
+            return array('value' => 0, 'label' => __('---No Data---'));
         }
     }
     public function toArray()

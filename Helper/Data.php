@@ -18,34 +18,43 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_LIST             = 'magemonkey/general/list';
     const XML_PATH_LOG              = 'magemonkey/general/log';
     const XML_PATH_MAPPING          = 'magemonkey/general/mapping';
+    const XML_PATH_CONFIRMATION_FLAG = 'newsletter/subscription/confirm';
 
 
     protected $_storeManager;
     protected $_mlogger;
     protected $_groupRepositoryInterface;
+    protected $_scopeConfig;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Ebizmarts\MageMonkey\Model\Logger\Magemonkey $logger
      * @param \Magento\Customer\Api\GroupRepositoryInterface $groupRepositoryInterface
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Model\Logger\Magemonkey $logger,
-        \Magento\Customer\Api\GroupRepositoryInterface $groupRepositoryInterface
+        \Magento\Customer\Api\GroupRepositoryInterface $groupRepositoryInterface,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
         $this->_storeManager                = $storeManager;
         $this->_mlogger                     = $logger;
         $this->_groupRepositoryInterface    = $groupRepositoryInterface;
+        $this->_scopeConfig                 = $scopeConfig;
         parent::__construct($context);
     }
 
     public function isMonkeyEnabled($store = null)
     {
         return $this->scopeConfig->getValue(self::XML_PATH_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
+    }
+    public function isDoubleOptInEnabled($store = null)
+    {
+        return $this->_scopeConfig->getValue(self::XML_PATH_CONFIRMATION_FLAG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
     }
     public function getApiKey($store = null)
     {
@@ -68,6 +77,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function getMergeVars($customer,$store = null)
     {
+        $this->log('getMergeVars');
         $merge_vars = array();
         $mergeVars  = unserialize($this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
         foreach($mergeVars as $map)
@@ -137,5 +147,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
         return $merge_vars;
+    }
+    public function createWebhook()
+    {
+
     }
 }

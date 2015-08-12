@@ -26,7 +26,7 @@ class InstallSchema implements InstallSchemaInterface
 
 
         $connection->addColumn(
-            $installer->getTable('customer_entity'),
+            $installer->getTable('newsletter_subscriber'),
             'magemonkey_id',
             [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,

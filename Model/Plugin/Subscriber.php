@@ -20,18 +20,24 @@ class Subscriber
      * @var \Magento\Customer\Model\Customer
      */
     protected $_customer;
-
+    /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $_customerSession;
     /**
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
      * @param \Magento\Customer\Model\Customer $customer
+     * @param \Magento\Customer\Model\Session $customerSession
      */
     public function __construct(
         \Ebizmarts\MageMonkey\Helper\Data $helper,
-        \Magento\Customer\Model\Customer $customer
+        \Magento\Customer\Model\Customer $customer,
+        \Magento\Customer\Model\Session $customerSession
     )
     {
-        $this->_helper    = $helper;
-        $this->_customer  = $customer;
+        $this->_helper          = $helper;
+        $this->_customer        = $customer;
+        $this->_customerSession = $customerSession;
     }
 
     public function afterUnsubscribeCustomerById(
@@ -41,7 +47,7 @@ class Subscriber
         if($subscriber->getMagemonkeyId())
         {
             $api = New \Ebizmarts\MageMonkey\Model\Api(array(),$this->_helper);
-            $return =$api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
+            $return = $api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
             $subscriber->setMagemonkeyId('')->save();
         }
     }
@@ -50,13 +56,22 @@ class Subscriber
         $subscriber
     )
     {
+        $this->_helper->log('afterSubscribeCustomerById');
         $storeId = $subscriber->getStoreId();
         if($this->_helper->isMonkeyEnabled($storeId)) {
+            $this->_helper->log('isMonkeyEnabled');
             $customer = $this->_customer->load($subscriber->getCustomerId());
             $mergeVars = $this->_helper->getMergeVars($customer);
             $this->_helper->log(print_r($mergeVars, 1));
             $api = New \Ebizmarts\MageMonkey\Model\Api(array(), $this->_helper);
-            $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $subscriber->getEmail(), 'email_type' => 'html', 'status' => 'pendig', 'merge_fields' => $mergeVars);
+            $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
+                && $this->_customerSession->getCustomerDataObject()->getEmail() == $subscriber->getSubscriberEmail();
+            if($this->_helper->isDoubleOptInEnabled($storeId) && !$isSubscribeOwnEmail) {
+                $status = 'pending';
+            }else{
+                $status = 'subscribed';
+            }
+            $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $subscriber->getEmail(), 'email_type' => 'html', 'status' => $status, 'merge_fields' => $mergeVars);
             $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
             if (isset($return->id)) {
                 $subscriber->setMagemonkeyId($return->id)->save();

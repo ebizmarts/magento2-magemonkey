@@ -28,12 +28,15 @@ class Details  implements \Magento\Framework\Option\ArrayInterface
     }
     public function toOptionArray()
     {
-        if(is_array($this->_options)) {
+        if(isset($this->_options->account_name)) {
             return [
-                ['value'=>'Account Name','label'=> $this->_options->account_name],
-                ['value'=>'Company',     'label'=> $this->_options->contact->company],
-                ['value'=>'Address',     'label'=>$this->_options->contact->address_1],
-                ['value'=>'Country',     'label'=>$this->_options->contact->country],
+                ['value'=>'Account Name',      'label'=> $this->_options->account_name],
+                ['value'=>'Company',           'label'=> $this->_options->contact->company],
+                ['value'=>'Total Subscribers', 'label'=> $this->_options->total_subscribers],
+            ];
+        }else{
+            return [
+                ['value'=>'Error','label' => __('Invalid API Key')]
             ];
         }
     }
