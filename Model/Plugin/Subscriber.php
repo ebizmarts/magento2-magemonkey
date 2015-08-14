@@ -56,13 +56,10 @@ class Subscriber
         $subscriber
     )
     {
-        $this->_helper->log('afterSubscribeCustomerById');
         $storeId = $subscriber->getStoreId();
         if($this->_helper->isMonkeyEnabled($storeId)) {
-            $this->_helper->log('isMonkeyEnabled');
             $customer = $this->_customer->load($subscriber->getCustomerId());
             $mergeVars = $this->_helper->getMergeVars($customer);
-            $this->_helper->log(print_r($mergeVars, 1));
             $api = New \Ebizmarts\MageMonkey\Model\Api(array(), $this->_helper);
             $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
                 && $this->_customerSession->getCustomerDataObject()->getEmail() == $subscriber->getSubscriberEmail();
@@ -71,7 +68,7 @@ class Subscriber
             }else{
                 $status = 'subscribed';
             }
-            $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $subscriber->getEmail(), 'email_type' => 'html', 'status' => $status, 'merge_fields' => $mergeVars);
+            $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $subscriber->getEmail(), 'email_type' => 'html', 'status' => $status, /*'merge_fields' => $mergeVars*/);
             $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
             if (isset($return->id)) {
                 $subscriber->setMagemonkeyId($return->id)->save();

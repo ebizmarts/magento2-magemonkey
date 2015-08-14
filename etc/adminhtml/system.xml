@@ -37,12 +37,12 @@
                         <field id="*/*/active">1</field>
                     </depends>
                 </field>
-                <field id="maxlistsamount" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <!--<field id="maxlistsamount" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Max amount of lists to show</label>
                     <depends>
                         <field id="*/*/active">1</field>
                     </depends>
-                </field>
+                </field>-->
                 <field id="list" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>General Subscription</label>
                     <source_model>Ebizmarts\MageMonkey\Model\Config\Source\Monkeylist</source_model>
@@ -69,6 +69,13 @@
                         <field id="*/*/active">1</field>
                     </depends>
                 </field>
+                <!--<field id="chekcoutsubscribe" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subscribe On Checkout</label>
+                    <source_model>Ebizmarts\MageMonkey\Model\Config\Source\Checkoutsubscribe</source_model>
+                    <depends>
+                        <field id="*/*/active">1</field>
+                    </depends>
+                </field>-->
             </group>
         </section>
     </system>
