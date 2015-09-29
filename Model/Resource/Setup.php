@@ -9,7 +9,7 @@
 
 namespace Ebizmarts\MageMonkey\Model\Resource;
 
-class Setup  extends \Magento\Framework\Module\DataSetup
+class Setup  extends \Magento\Setup\Module\DataSetup
 {
     /**
      * @param \Magento\Framework\Module\Setup\Context $context
