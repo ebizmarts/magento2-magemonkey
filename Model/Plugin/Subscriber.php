@@ -58,7 +58,7 @@ class Subscriber
     {
         $storeId = $subscriber->getStoreId();
         if($this->_helper->isMonkeyEnabled($storeId)) {
-            $customer = $this->_customer->load($subscriber->getCustomerId());
+            $customer = $this->_customer;
             $mergeVars = $this->_helper->getMergeVars($customer);
             $api = New \Ebizmarts\MageMonkey\Model\Api(array(), $this->_helper);
             $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
