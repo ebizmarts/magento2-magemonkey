@@ -1,11 +1,14 @@
 <?php
 /**
- * Author: info@ebizmarts.com
- * Date: 2/26/15
- * Time: 11:43 PM
- * File: List.php
- * Module: magento2
+ * Ebizmarts_MAgeMonkey Magento JS component
+ *
+ * @category    Ebizmarts
+ * @package     Ebizmarts_MageMonkey
+ * @author      Ebizmarts Team <info@ebizmarts.com>
+ * @copyright   Ebizmarts (http://ebizmarts.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 namespace Ebizmarts\MageMonkey\Model\Config\Source;
 
 class Monkeylist implements \Magento\Framework\Option\ArrayInterface

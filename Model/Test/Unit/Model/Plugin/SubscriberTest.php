@@ -1,11 +1,14 @@
 <?php
 /**
- * Author: info@ebizmarts.com
- * Date: 14/08/15
- * Time: 10:30 AM
- * File: Subscriber.php
- * Module: magento2
+ * Ebizmarts_MAgeMonkey Magento JS component
+ *
+ * @category    Ebizmarts
+ * @package     Ebizmarts_MageMonkey
+ * @author      Ebizmarts Team <info@ebizmarts.com>
+ * @copyright   Ebizmarts (http://ebizmarts.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 namespace Ebizmarts\MageMonkey\Test\Unit\Model\Plugin\Subscriber;
 
 class SubscriberTest extends \PHPUnit_Framework_TestCase
