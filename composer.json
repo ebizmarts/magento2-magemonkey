@@ -2,7 +2,7 @@
     "name": "ebizmarts/magento2-magemonkey",
     "description": "Connect Mailchimp with Magento",
     "type": "magento2-module",
-    "version": "3.0.5-RC",
+    "version": "3.0.0",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
