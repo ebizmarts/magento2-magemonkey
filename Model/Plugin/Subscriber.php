@@ -42,20 +42,29 @@ class Subscriber
         $this->_customerSession = $customerSession;
     }
 
-    public function afterUnsubscribeCustomerById(
-        $subscriber
+    public function beforeUnsubscribeCustomerById(
+        $subscriber, $result
     )
     {
+        $this->_helper->log('unsubscribe');
+        $this->_helper->log($subscriber->getData());
         if($subscriber->getMagemonkeyId())
         {
+            $this->_helper->log('if');
+            $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+
+            $api = $objectManager->create('Ebizmarts\MageMonkey\Model\Api', array(array(),$this->_helper));
             $api = New \Ebizmarts\MageMonkey\Model\Api(array(),$this->_helper);
-            $return = $api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
-            $subscriber->setMagemonkeyId('')->save();
+            //$return = $api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
+            $this->_helper->log($subscriber->getMagemonkeyId());
+            //$subscriber->setMagemonkeyId('');
         }
+        $this->_helper->log('out');
+        return $result;
     }
 
     public function afterSubscribeCustomerById(
-        $subscriber
+        $subscriber, $result
     )
     {
         $storeId = $subscriber->getStoreId();
@@ -73,8 +82,9 @@ class Subscriber
             $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $subscriber->getEmail(), 'email_type' => 'html', 'status' => $status, /*'merge_fields' => $mergeVars*/);
             $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
             if (isset($return->id)) {
-                $subscriber->setMagemonkeyId($return->id)->save();
+                $subscriber->setMagemonkeyId($return->id);
             }
         }
+        return $result;
     }
 }

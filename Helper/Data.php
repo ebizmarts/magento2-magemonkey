@@ -108,8 +108,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 'billing_address':
                     case 'shipping_address':
                         $addr = explode('_', $customAtt);
-                        $address = $customer->{'getPrimary'.ucfirst($addr[0]).'Address'}();
-                        if($address){
+                        if($address = $customer->{'getPrimary'.ucfirst($addr[0]).'Address'}()){
                             $merge_vars[$key] = array(
                                 'addr1'   => $address->getStreet(1),
                                 'addr2'   => $address->getStreet(2),
@@ -150,9 +149,5 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
         return $merge_vars;
-    }
-    public function createWebhook()
-    {
-
     }
 }

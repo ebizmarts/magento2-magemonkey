@@ -36,7 +36,9 @@ class Api
     {
         if($args)
         {
-            $result = call_user_func_array(array($this->_mcapi, $command), $args);
+            if(is_callable(array($this->_mcapi, $command))) {
+                $result = call_user_func_array(array($this->_mcapi, $command), $args);
+            }
         }
         else
         {
