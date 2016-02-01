@@ -17,7 +17,7 @@ class OauthWizard extends \Magento\Config\Block\System\Config\Form\Field
 
     protected $_authorizeUri     = "https://login.mailchimp.com/oauth2/authorize";
     protected $_accessTokenUri   = "https://login.mailchimp.com/oauth2/token";
-    protected $_redirectUri      = "http://ebizmarts.com/magento/mailchimp/oauth2/complete.php";
+    protected $_redirectUri      = "http://ebizmarts.com/magento2/mailchimp/oauth2/complete.php";
     protected $_clientId         = 213915096176;
 
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) {
