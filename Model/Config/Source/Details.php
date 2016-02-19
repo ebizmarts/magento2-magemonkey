@@ -21,12 +21,15 @@ class Details  implements \Magento\Framework\Option\ArrayInterface
     /**
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
      */
-    public function __construct(\Ebizmarts\MageMonkey\Helper\Data $helper)
+    public function __construct(
+        \Ebizmarts\MageMonkey\Helper\Data $helper,
+        \Ebizmarts\MageMonkey\Model\Api $api
+    )
     {
         $this->_helper  = $helper;
-        $this->_api     = New \Ebizmarts\MageMonkey\Model\Api(array(),$helper);
+        $this->_api = $api;
         if($helper->getApiKey()) {
-            $this->_options = $this->_api->info();
+            $this->_options = $this->_api->loadByStore()->info();
         }
     }
     public function toOptionArray()

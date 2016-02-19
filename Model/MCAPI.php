@@ -26,15 +26,18 @@ class MCAPI
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
      * @param bool $secure
      */
-    public function __construct($apiKey,
-                                \Ebizmarts\MageMonkey\Helper\Data $helper,
-                                $secure = false
+    public function __construct(
+        \Ebizmarts\MageMonkey\Helper\Data $helper
     )
     {
-        $this->_secure  = $secure;
+        $this->_helper = $helper;
         $this->_apiUrl  = parse_url("http://api.mailchimp.com/" . $this->_version);
+    }
+
+    public function load($apiKey, $secure = false){
         $this->_apiKey  = $apiKey;
-        $this->_helper  = $helper;
+        $this->_secure  = $secure;
+        return $this;
     }
     public function setTimeout($seconds)
     {

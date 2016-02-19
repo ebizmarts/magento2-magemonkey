@@ -19,11 +19,14 @@ class Monkeylist implements \Magento\Framework\Option\ArrayInterface
     /**
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
      */
-    public function __construct(\Ebizmarts\MageMonkey\Helper\Data $helper)
+    public function __construct(
+        \Ebizmarts\MageMonkey\Helper\Data $helper,
+        \Ebizmarts\MageMonkey\Model\Api $api
+    )
     {
 
-        $this->_helper  = $helper;
-        $this->_api     = New \Ebizmarts\MageMonkey\Model\Api(array(),$helper);
+        $this->_helper = $helper;
+        $this->_api = $api;
         if($helper->getApiKey()) {
             $this->_options = $this->_api->lists();
         }
@@ -34,13 +37,16 @@ class Monkeylist implements \Magento\Framework\Option\ArrayInterface
             $rc = array();
             foreach($this->_options->lists as $list)
             {
-                $rc[] = array('value'=>$list->id,'label'=>$list->name);
+                if(isset($list->id) && isset($list->name)) {
+                    $rc[] = array('value' => $list->id, 'label' => $list->name);
+                }
             }
             return $rc;
         }else{
             return array('value' => 0, 'label' => __('---No Data---'));
         }
     }
+
     public function toArray()
     {
         $rc = array();

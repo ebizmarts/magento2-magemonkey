@@ -31,47 +31,48 @@ class Subscriber
      * @param \Magento\Customer\Model\Customer $customer
      * @param \Magento\Customer\Model\Session $customerSession
      */
+    protected $_api = null;
+
     public function __construct(
         \Ebizmarts\MageMonkey\Helper\Data $helper,
         \Magento\Customer\Model\Customer $customer,
-        \Magento\Customer\Model\Session $customerSession
+        \Magento\Customer\Model\Session $customerSession,
+        \Ebizmarts\MageMonkey\Model\Api $api
+
     )
     {
         $this->_helper          = $helper;
         $this->_customer        = $customer;
         $this->_customerSession = $customerSession;
+        $this->_api             = $api;
     }
 
     public function beforeUnsubscribeCustomerById(
-        $subscriber, $result
+        $subscriber, $customerId
     )
     {
-        $this->_helper->log('unsubscribe');
-        $this->_helper->log($subscriber->getData());
+        $subscriber->loadByCustomerId($customerId);
         if($subscriber->getMagemonkeyId())
         {
-            $this->_helper->log('if');
-            $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-
-            $api = $objectManager->create('Ebizmarts\MageMonkey\Model\Api', array(array(),$this->_helper));
-            $api = New \Ebizmarts\MageMonkey\Model\Api(array(),$this->_helper);
-            //$return = $api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
-            $this->_helper->log($subscriber->getMagemonkeyId());
-            //$subscriber->setMagemonkeyId('');
+            $api = $this->_api->loadByStore($subscriber->getStoreId());
+            $api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
+            $subscriber->setMagemonkeyId('');
         }
-        $this->_helper->log('out');
-        return $result;
     }
 
-    public function afterSubscribeCustomerById(
-        $subscriber, $result
+    public function beforeSubscribeCustomerById(
+        $subscriber, $customerId
     )
     {
+        $subscriber->loadByCustomerId($customerId);
         $storeId = $subscriber->getStoreId();
         if($this->_helper->isMonkeyEnabled($storeId)) {
-            $customer = $this->_customer;
+            $this->_helper->log($subscriber->getEmail());
+            $customer = $this->_customer->load($customerId);
+            $this->_helper->log($customer->getId());
+            $this->_helper->log($customer->getFirstname());
             $mergeVars = $this->_helper->getMergeVars($customer);
-            $api = New \Ebizmarts\MageMonkey\Model\Api(array(), $this->_helper);
+            $api = $this->_api->loadByStore($subscriber->getStoreId());
             $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
                 && $this->_customerSession->getCustomerDataObject()->getEmail() == $subscriber->getSubscriberEmail();
             if($this->_helper->isDoubleOptInEnabled($storeId) && !$isSubscribeOwnEmail) {
@@ -79,12 +80,18 @@ class Subscriber
             }else{
                 $status = 'subscribed';
             }
-            $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $subscriber->getEmail(), 'email_type' => 'html', 'status' => $status, /*'merge_fields' => $mergeVars*/);
+            $this->_helper->log('$this->_helper->getDefaultList()');
+            $this->_helper->log($this->_helper->getDefaultList());
+            if($mergeVars){
+                $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status, 'merge_fields' => $mergeVars);
+            }else {
+                $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status);
+            }
+            $this->_helper->log(print_r(json_encode($data), 1));
             $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
             if (isset($return->id)) {
                 $subscriber->setMagemonkeyId($return->id);
             }
         }
-        return $result;
     }
 }

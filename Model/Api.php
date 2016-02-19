@@ -15,17 +15,19 @@ class Api
 {
     protected $_mcapi   = null;
     protected $apiHost  = null;
+    protected $_helper = null;
 
     /**
      * @param array $args
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
      */
-    public function __construct(array $args,
-                                \Ebizmarts\MageMonkey\Helper\Data $helper
+    public function __construct(
+        \Ebizmarts\MageMonkey\Helper\Data $helper,
+        \Ebizmarts\MageMonkey\Model\MCAPI $mcapi
     )
     {
-        $apiKey         = (!isset($args['apiKey'])) ? $helper->getApiKey() : $args['apiKey'];
-        $this->_mcapi = new \Ebizmarts\MageMonkey\Model\MCAPI($apiKey,$helper);
+        $this->_helper = $helper;
+        $this->_mcapi = $mcapi;
 
     }
     public function __call($method,$args=null)
@@ -45,5 +47,10 @@ class Api
             $result = $this->_mcapi->{$command}();
         }
         return $result;
+    }
+
+    public function loadByStore($store = null){
+        $apiKey = $this->_helper->getApiKey($store);
+        return $this->_mcapi->load($apiKey);
     }
 }

@@ -82,6 +82,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $this->log('getMergeVars');
         $merge_vars = array();
+        $config = $this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
         $mergeVars  = unserialize($this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
         foreach($mergeVars as $map)
         {
@@ -91,6 +92,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                 $key = strtoupper($chimpTag);
                 switch ($customAtt) {
+                    case 'fname':
+                        $val = $customer->getFirstname();
+                        $this->log($val);
+                        $merge_vars[$key] = $val;
+                        break;
+                    case 'lname':
+                        $val = $customer->getLastname();
+                        $this->log($val);
+                        $merge_vars[$key] = $val;
+                        break;
                     case 'gender':
                         $val = (int)$customer->getData(strtolower($customAtt));
                         if($val == 1){
@@ -109,20 +120,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 'shipping_address':
                         $addr = explode('_', $customAtt);
                         if($address = $customer->{'getPrimary'.ucfirst($addr[0]).'Address'}()){
-                            $merge_vars[$key] = array(
-                                'addr1'   => $address->getStreet(1),
-                                'addr2'   => $address->getStreet(2),
-                                'city'    => $address->getCity(),
-                                'state'   => (!$address->getRegion() ? $address->getCity() : $address->getRegion()),
-                                'zip'     => $address->getPostcode(),
-                                'country' => $address->getCountryId()
-                            );
+                            $this->log(print_r(json_encode($address), 1));
+                                $merge_vars[$key] = array(
+                                    'addr1' => $address->getStreet(1),
+                                    'addr2' => $address->getStreet(2),
+                                    'city' => $address->getCity(),
+                                    'state' => (!$address->getRegion() ? $address->getCity() : $address->getRegion()),
+                                    'zip' => $address->getPostcode(),
+                                    'country' => $address->getCountryId()
+                                );
+                        }
+                        break;
+                    case 'telephone':
+                        if($address = $customer->{'getPrimaryBillingAddress'}()){
                             $telephone = $address->getTelephone();
-                            if($telephone){
+                            if ($telephone) {
                                 $merge_vars['TELEPHONE'] = $telephone;
                             }
+                        }
+                        break;
+                    case 'company':
+                        if($address = $customer->{'getPrimaryBillingAddress'}()){
                             $company = $address->getCompany();
-                            if($company){
+                            if ($company) {
                                 $merge_vars['COMPANY'] = $company;
                             }
                         }
