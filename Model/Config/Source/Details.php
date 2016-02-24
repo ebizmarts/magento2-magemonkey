@@ -14,8 +14,17 @@ namespace Ebizmarts\MageMonkey\Model\Config\Source;
 
 class Details  implements \Magento\Framework\Option\ArrayInterface
 {
+    /**
+     * @var \Ebizmarts\MageMonkey\Model\Api|null
+     */
     protected $_api     = null;
+    /**
+     * @var null
+     */
     protected $_options = null;
+    /**
+     * @var \Ebizmarts\MageMonkey\Helper\Data|null
+     */
     protected $_helper  = null;
 
     /**

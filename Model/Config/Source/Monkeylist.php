@@ -27,7 +27,7 @@ class Monkeylist implements \Magento\Framework\Option\ArrayInterface
 
         $this->_helper = $helper;
         $this->_api = $api;
-        if($helper->getApiKey()) {
+        if($this->_helper->getApiKey()) {
             $this->_options = $this->_api->lists();
         }
     }
@@ -43,7 +43,7 @@ class Monkeylist implements \Magento\Framework\Option\ArrayInterface
             }
             return $rc;
         }else{
-            return array('value' => 0, 'label' => __('---No Data---'));
+            return array(array('value' => 0, 'label' => __('---No Data---')));
         }
     }
 
