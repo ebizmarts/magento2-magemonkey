@@ -7,7 +7,7 @@
          bootstrap="./framework/bootstrap.php"
 >
     <testsuite name="Magento Unit Tests">
-        <directory suffix="Test.php">../../../vendor/ebizmarts/magento2-magemonkey</directory>
+        <directory suffix="Test.php">../../../vendor/ebizmarts/magento2-magemonkey/Test/Unit</directory>
     </testsuite>
     <php>
         <ini name="date.timezone" value="America/Los_Angeles"/>
