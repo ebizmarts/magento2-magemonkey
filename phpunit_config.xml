@@ -15,7 +15,7 @@
     </php>
     <filter>
         <whitelist addUncoveredFilesFromWhiteList="true">
-            <directory suffix=".php">../../../app/code/Ebizmarts/*</directory>
+            <directory suffix=".php">../../../vendor/ebizmarts/magento2-magemonkey</directory>
             <exclude>
                 <directory>../../../app/code/*/*/Test</directory>
                 <directory>../../../lib/internal/*/*/Test</directory>
