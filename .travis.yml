@@ -14,3 +14,6 @@ script:
   - /bin/cp ../phpunit_config.xml dev/tests/unit/
   - ./vendor/bin/phpunit -c dev/tests/unit/phpunit_config.xml
   - ./vendor/bin/phpunit -c dev/tests/unit/phpunit_config.xml --coverage-text
+
+notifications:
+  slack: ebizmarts:k7A0FCTvGxkJdxsDITHlJG0Z
