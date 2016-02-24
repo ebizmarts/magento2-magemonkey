@@ -12,7 +12,6 @@ script:
   - wget https://gist.githubusercontent.com/centerax/5e42abec89d62a1308ba/raw/4b3242361c0690e234266afb3520c2940ac1055a/auth.json
   - composer require ebizmarts/magento2-magemonkey:dev-develop
   - /bin/cp ../phpunit_config.xml dev/tests/unit/
-  - ./vendor/bin/phpunit -c dev/tests/unit/phpunit_config.xml
   - ./vendor/bin/phpunit -c dev/tests/unit/phpunit_config.xml --coverage-text
 
 notifications:
