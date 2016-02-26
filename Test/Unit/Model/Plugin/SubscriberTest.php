@@ -21,7 +21,7 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \Magento\Newsletter\Model\Resource\Subscriber|\PHPUnit_Framework_MockObject_MockObject
      */
-//    protected $resource;
+    protected $resource;
 
     /**
      * @var \Magento\Newsletter\Model\SubscriberFactory|\PHPUnit_Framework_MockObject_MockObject
@@ -40,7 +40,6 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
     private $groupRepositoryInterface;
     private $scopeConfig;
     private $helper;
-    private $customerMock;
     private $customerSessionMock;
     private $apiMock;
     private $customerRepository;
@@ -49,7 +48,6 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
     private $customerSession;
     private $customerAccountManagement;
     private $inlineTranslation;
-    private $resource;
     private $objectManager;
 
 

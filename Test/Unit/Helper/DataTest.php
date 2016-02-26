@@ -83,4 +83,31 @@ class DataTest extends \PHPUnit_Framework_TestCase
             ->willReturn('Main List');
         $this->assertEquals($this->_helper->getDefaultList(), 'Main List');
     }
+
+    public function testGetMergeVars(){
+        $customerMock = $this->getMockBuilder('Magento\Customer\Model\Customer')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->_scopeMock->expects($this->atLeastOnce())
+            ->method('getValue')
+            ->willReturn('a:9:{s:18:"_1455130677743_743";a:2:{s:7:"magento";s:5:"fname";s:9:"mailchimp";s:5:"FNAME";}s:18:"_1455132553917_917";a:2:{s:7:"magento";s:5:"lname";s:9:"mailchimp";s:5:"LNAME";}s:18:"_1455132560288_288";a:2:{s:7:"magento";s:6:"gender";s:9:"mailchimp";s:6:"GENDER";}s:18:"_1455132567137_137";a:2:{s:7:"magento";s:3:"dob";s:9:"mailchimp";s:3:"DOB";}s:18:"_1455132573944_944";a:2:{s:7:"magento";s:15:"billing_address";s:9:"mailchimp";s:7:"BILLING";}s:18:"_1455132594111_111";a:2:{s:7:"magento";s:16:"shipping_address";s:9:"mailchimp";s:8:"SHIPPING";}s:17:"_1455132602049_49";a:2:{s:7:"magento";s:9:"telephone";s:9:"mailchimp";s:9:"TELEPHONE";}s:18:"_1455132614663_663";a:2:{s:7:"magento";s:7:"company";s:9:"mailchimp";s:7:"COMPANY";}s:18:"_1455132622855_855";a:2:{s:7:"magento";s:8:"group_id";s:9:"mailchimp";s:6:"CGROUP";}}');
+//        $customerMock->expects($this->at(0))
+//            ->method('getData')
+//            ->with('firstname')
+//            ->willReturn('fname');
+//        $customerMock->expects($this->at(0))
+//            ->method('getData')
+//            ->with('lastname')
+//            ->willReturn('lname');
+        $customerMock->expects($this->at(2))
+            ->method('getData')
+            ->with('gender')
+            ->willReturn(1);
+        $customerMock->expects($this->at(3))
+            ->method('getData')
+            ->with('dob')
+            ->willReturn('1989-06-04');
+
+        $this->_helper->getMergeVars($customerMock);
+    }
 }

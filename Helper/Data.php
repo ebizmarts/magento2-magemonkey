@@ -77,9 +77,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function getMergeVars($customer,$store = null)
     {
-        $this->log('getMergeVars');
         $merge_vars = array();
-        $config = $this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
         $mergeVars  = unserialize($this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
         foreach($mergeVars as $map)
         {
