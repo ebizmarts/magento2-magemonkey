@@ -81,68 +81,73 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $mergeVars  = unserialize($this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
         foreach($mergeVars as $map)
         {
-            $customAtt = $map['magento'];
-            $chimpTag  = $map['mailchimp'];
-            if($chimpTag && $customAtt){
+            $this->_getMergeVarsValue($map, $customer);
+        }
+        return $merge_vars;
+    }
 
-                $key = strtoupper($chimpTag);
-                switch ($customAtt) {
-                    case 'fname':
-                        $val = $customer->getFirstname();
-                        $this->log($val);
-                        $merge_vars[$key] = $val;
-                        break;
-                    case 'lname':
-                        $val = $customer->getLastname();
-                        $this->log($val);
-                        $merge_vars[$key] = $val;
-                        break;
-                    case 'gender':
-                        $val = (int)$customer->getData(strtolower($customAtt));
-                        if($val == 1){
-                            $merge_vars[$key] = 'Male';
-                        }elseif($val == 2){
-                            $merge_vars[$key] = 'Female';
+    protected function _getMergeVarsValue($map, $customer)
+    {
+        $customAtt = $map['magento'];
+        $chimpTag  = $map['mailchimp'];
+        if($chimpTag && $customAtt) {
+            $key = strtoupper($chimpTag);
+            switch ($customAtt) {
+                case 'fname':
+                    $val = $customer->getFirstname();
+                    $this->log($val);
+                    $merge_vars[$key] = $val;
+                    break;
+                case 'lname':
+                    $val = $customer->getLastname();
+                    $this->log($val);
+                    $merge_vars[$key] = $val;
+                    break;
+                case 'gender':
+                    $val = (int)$customer->getData(strtolower($customAtt));
+                    if ($val == 1) {
+                        $merge_vars[$key] = 'Male';
+                    } elseif ($val == 2) {
+                        $merge_vars[$key] = 'Female';
+                    }
+                    break;
+                case 'dob':
+                    $dob = (string)$customer->getData(strtolower($customAtt));
+                    if ($dob) {
+                        $merge_vars[$key] = (substr($dob, 5, 2) . '/' . substr($dob, 8, 2));
+                    }
+                    break;
+                case 'billing_address':
+                case 'shipping_address':
+                    $addr = explode('_', $customAtt);
+                    if ($address = $customer->{'getPrimary' . ucfirst($addr[0]) . 'Address'}()) {
+                        $merge_vars[$key] = array(
+                            'addr1' => $address->getStreet(1),
+                            'addr2' => $address->getStreet(2),
+                            'city' => $address->getCity(),
+                            'state' => (!$address->getRegion() ? $address->getCity() : $address->getRegion()),
+                            'zip' => $address->getPostcode(),
+                            'country' => $address->getCountryId()
+                        );
+                    }
+                    break;
+                case 'telephone':
+                    if ($address = $customer->{'getPrimaryBillingAddress'}()) {
+                        $telephone = $address->getTelephone();
+                        if ($telephone) {
+                            $merge_vars['TELEPHONE'] = $telephone;
                         }
-                        break;
-                    case 'dob':
-                        $dob = (string)$customer->getData(strtolower($customAtt));
-                        if($dob){
-                            $merge_vars[$key] = (substr($dob, 5, 2) . '/' . substr($dob, 8, 2));
+                    }
+                    break;
+                case 'company':
+                    if ($address = $customer->{'getPrimaryBillingAddress'}()) {
+                        $company = $address->getCompany();
+                        if ($company) {
+                            $merge_vars['COMPANY'] = $company;
                         }
-                        break;
-                    case 'billing_address':
-                    case 'shipping_address':
-                        $addr = explode('_', $customAtt);
-                        if($address = $customer->{'getPrimary'.ucfirst($addr[0]).'Address'}()){
-                            $this->log(print_r(json_encode($address), 1));
-                                $merge_vars[$key] = array(
-                                    'addr1' => $address->getStreet(1),
-                                    'addr2' => $address->getStreet(2),
-                                    'city' => $address->getCity(),
-                                    'state' => (!$address->getRegion() ? $address->getCity() : $address->getRegion()),
-                                    'zip' => $address->getPostcode(),
-                                    'country' => $address->getCountryId()
-                                );
-                        }
-                        break;
-                    case 'telephone':
-                        if($address = $customer->{'getPrimaryBillingAddress'}()){
-                            $telephone = $address->getTelephone();
-                            if ($telephone) {
-                                $merge_vars['TELEPHONE'] = $telephone;
-                            }
-                        }
-                        break;
-                    case 'company':
-                        if($address = $customer->{'getPrimaryBillingAddress'}()){
-                            $company = $address->getCompany();
-                            if ($company) {
-                                $merge_vars['COMPANY'] = $company;
-                            }
-                        }
-                        break;
-                    case 'group_id':
+                    }
+                    break;
+                case 'group_id':
 //                        $group_id = (int)$customer->getData(strtolower($customAtt));
 //                        $customerGroup = $this->_groupRepositoryInterface->getList('');
 //                        $this->log(print_r($customerGroup));
@@ -152,17 +157,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 ////                        }else{
 ////                            $merge_vars[$key] = $customerGroup[$group_id];
 ////                        }
-                        break;
-                    default:
-                        if( ($value = (string)$customer->getData(strtolower($customAtt))))
-                        {
-                            $merge_vars[$key] = (string)$customer->getData(strtolower($customAtt));
-                        }
-                        break;
+                    break;
+                default:
+                    if (($value = (string)$customer->getData(strtolower($customAtt)))) {
+                        $merge_vars[$key] = (string)$customer->getData(strtolower($customAtt));
+                    }
+                    break;
 
-                }
             }
+            return $merge_vars;
         }
-        return $merge_vars;
     }
 }
