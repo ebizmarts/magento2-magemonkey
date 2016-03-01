@@ -9,6 +9,9 @@ env:
   - TEST_SUITE=unit
   - TEST_SUITE=phpcs
 
+before_script:
+  - sleep 60
+
 script:
   - wget https://github.com/magento/magento2/archive/2.0.2.zip
   - unzip -qq 2.0.2.zip
