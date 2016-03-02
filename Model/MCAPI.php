@@ -14,7 +14,7 @@ namespace Ebizmarts\MageMonkey\Model;
 class MCAPI
 {
     protected $_version     = "3.0";
-    protected $_apiUrl      = null;
+//    protected $_apiUrl      = null;
     protected $_timeout     = 300;
     protected $_chunkSize   = 8192;
     protected $_apiKey      = null;
@@ -31,7 +31,7 @@ class MCAPI
     )
     {
         $this->_helper = $helper;
-        $this->_apiUrl  = parse_url("http://api.mailchimp.com/" . $this->_version);
+//        $this->_apiUrl  = parse_url(\Ebizmarts\MageMonkey\Model\Config::MAILCHIMP_ENDPOINT);
     }
 
     public function load($apiKey, $secure = false){
@@ -72,7 +72,7 @@ class MCAPI
                 $dc = 'us1';
             }
         }
-        $host   = $dc.'.'.$this->_apiUrl['host'].'/'.$this->_version;
+        $host   = $dc.'.'.\Ebizmarts\MageMonkey\Model\Config::ENDPOINT.'/'.$this->_version;
         if($method)
         {
             $host .= "/$method";
@@ -120,7 +120,7 @@ class MCAPI
 
         }
 
-        curl_setopt($ch, CURLOPT_URL, $host);
+        curl_setopt($ch, CURLOPT_URL, \Ebizmarts\MageMonkey\Model\Config::SCHEME.'://'.$host);
         curl_setopt($ch, CURLOPT_USERAGENT, 'MageMonkey/'); // @todo put the version of MageMonkey
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','Authorization: apikey '.$key,'Cache-Control: no-cache'));
@@ -136,7 +136,7 @@ class MCAPI
         $responseCode   = curl_getinfo($ch,CURLINFO_HTTP_CODE);
         curl_close($ch);
         $data           = json_decode($body);
-        $this->_helper->log(print_r(json_encode($data),1));
+        $this->_helper->log(var_export(json_encode($data),1));
         switch($use)
         {
             case 'DELETE':
