@@ -93,5 +93,6 @@ class Subscriber
                 $subscriber->setMagemonkeyId($return->id);
             }
         }
+        return [$customerId];
     }
 }
