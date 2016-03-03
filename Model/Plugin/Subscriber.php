@@ -87,11 +87,12 @@ class Subscriber
             }else {
                 $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status);
             }
-            $this->_helper->log(print_r(json_encode($data), 1));
+            $this->_helper->log(var_export(json_encode($data), 1));
             $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
             if (isset($return->id)) {
                 $subscriber->setMagemonkeyId($return->id);
             }
         }
+        return [$customerId];
     }
 }

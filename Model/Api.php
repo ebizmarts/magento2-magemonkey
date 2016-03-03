@@ -39,12 +39,15 @@ class Api
         if($args)
         {
             if(is_callable(array($this->_mcapi, $command))) {
-                $result = call_user_func_array(array($this->_mcapi, $command), $args);
+                $reflectionMethod = new ReflectionMethod('Ebizmarts\Magemonkey\Model\MCAPI',$command);
+                $result = $reflectionMethod->invoqueArgs($this->_mcapi,$args);
             }
         }
         else
         {
-            $result = $this->_mcapi->{$command}();
+            if(is_callable(array($this->_mcapi, $command))) {
+                $result = $this->_mcapi->{$command}();
+            }
         }
         return $result;
     }

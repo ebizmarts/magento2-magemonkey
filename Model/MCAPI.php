@@ -14,16 +14,12 @@ namespace Ebizmarts\MageMonkey\Model;
 class MCAPI
 {
     protected $_version     = "3.0";
-    protected $_apiUrl      = null;
+//    protected $_apiUrl      = null;
     protected $_timeout     = 300;
     protected $_chunkSize   = 8192;
     protected $_apiKey      = null;
     protected $_secure      = false;
     protected $_helper      = null;
-    /**
-     * @var \Magento\Framework\HTTP\Adapter\Curl
-     */
-    protected $_curl = null;
 
     /**
      * @param $apiKey
@@ -31,13 +27,11 @@ class MCAPI
      * @param bool $secure
      */
     public function __construct(
-        \Ebizmarts\MageMonkey\Helper\Data $helper,
-        \Magento\Framework\HTTP\Adapter\Curl $curl
+        \Ebizmarts\MageMonkey\Helper\Data $helper
     )
     {
         $this->_helper = $helper;
-        $this->_apiUrl  = parse_url("http://api.mailchimp.com/" . $this->_version);
-        $this->_curl = $curl;
+//        $this->_apiUrl  = parse_url(\Ebizmarts\MageMonkey\Model\Config::MAILCHIMP_ENDPOINT);
     }
 
     public function load($apiKey, $secure = false){
@@ -68,38 +62,36 @@ class MCAPI
     }
     public function callServer($use = 'GET',$method = null, $params = null,$fields = null)
     {
+        $dc = '';
         $key = '';
         list($host,$key) = $this->getHost($method, $params);
 //        $ch     = curl_init();
         $curl = $this->_curl;
         $this->_helper->log($host);
-//        curl_setopt($ch, CURLOPT_POST, false);
-        $curl->addOption(CURLOPT_POST, false);
+        curl_setopt($ch, CURLOPT_POST, false);
         if($fields)
         {
-//            curl_setopt($ch,CURLOPT_POSTFIELDS,$fields);
-            $curl->addOption(CURLOPT_POSTFIELDS, $fields);
+            curl_setopt($ch,CURLOPT_POSTFIELDS,$fields);
             $this->_helper->log($fields);
         }
-        $curlHeaders = array('Content-Type: application/json','Authorization: apikey '.$key,'Cache-Control: no-cache');
         switch($use)
         {
             case 'POST':
-                $curl->addOption(CURLOPT_POST, true);
+                curl_setopt($ch,CURLOPT_POST,true);
                 break;
             case 'GET':
                 break;
             case 'DELETE':
-                $curl->addOption(CURLOPT_POST, false);
-                $curl->addOption(CURLOPT_CUSTOMREQUEST, 'DELETE');
+                curl_setopt($ch,CURLOPT_POST,false);
+                curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'DELETE');
                 break;
             case 'PATCH':
-                $curl->addOption(CURLOPT_POST, true);
-                $curl->addOption(CURLOPT_CUSTOMREQUEST, 'PATCH');
+                curl_setopt($ch,CURLOPT_POST,true);
+                curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'PATCH');
                 break;
             case 'PUT':
-                $curl->addOption(CURLOPT_POST, true);
-                $curl->addOption(CURLOPT_CUSTOMREQUEST, 'PUT');
+                curl_setopt($ch,CURLOPT_POST,true);
+                curl_setopt($ch,CURLOPT_PUT, true);
                 break;
 
         }
