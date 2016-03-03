@@ -20,6 +20,10 @@ class MCAPI
     protected $_apiKey      = null;
     protected $_secure      = false;
     protected $_helper      = null;
+    /**
+     * @var \Magento\Framework\HTTP\Adapter\Curl
+     */
+    protected $_curl = null;
 
     /**
      * @param $apiKey
@@ -27,11 +31,13 @@ class MCAPI
      * @param bool $secure
      */
     public function __construct(
-        \Ebizmarts\MageMonkey\Helper\Data $helper
+        \Ebizmarts\MageMonkey\Helper\Data $helper,
+        \Magento\Framework\HTTP\Adapter\Curl $curl
     )
     {
         $this->_helper = $helper;
         $this->_apiUrl  = parse_url("http://api.mailchimp.com/" . $this->_version);
+        $this->_curl = $curl;
     }
 
     public function load($apiKey, $secure = false){
@@ -62,80 +68,58 @@ class MCAPI
     }
     public function callServer($use = 'GET',$method = null, $params = null,$fields = null)
     {
-        $dc = '';
         $key = '';
-        if(strstr($this->_apiKey,'-'))
-        {
-            list($key,$dc)  = explode('-',$this->_apiKey);
-            if(!$dc)
-            {
-                $dc = 'us1';
-            }
-        }
-        $host   = $dc.'.'.$this->_apiUrl['host'].'/'.$this->_version;
-        if($method)
-        {
-            $host .= "/$method";
-        }
-        if(is_array($params))
-        {
-            foreach($params as $pkey => $value)
-            {
-                if(is_numeric($pkey))
-                {
-                    $host .= "/$value";
-                }
-                else {
-                    $host .= "/$pkey/$value";
-                }
-            }
-        }
-        $ch     = curl_init();
+        list($host,$key) = $this->getHost($method, $params);
+//        $ch     = curl_init();
+        $curl = $this->_curl;
         $this->_helper->log($host);
-        curl_setopt($ch, CURLOPT_POST, false);
+//        curl_setopt($ch, CURLOPT_POST, false);
+        $curl->addOption(CURLOPT_POST, false);
         if($fields)
         {
-            curl_setopt($ch,CURLOPT_POSTFIELDS,$fields);
+//            curl_setopt($ch,CURLOPT_POSTFIELDS,$fields);
+            $curl->addOption(CURLOPT_POSTFIELDS, $fields);
             $this->_helper->log($fields);
         }
+        $curlHeaders = array('Content-Type: application/json','Authorization: apikey '.$key,'Cache-Control: no-cache');
         switch($use)
         {
             case 'POST':
-                curl_setopt($ch,CURLOPT_POST,true);
+                $curl->addOption(CURLOPT_POST, true);
                 break;
             case 'GET':
                 break;
             case 'DELETE':
-                curl_setopt($ch,CURLOPT_POST,false);
-                curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'DELETE');
+                $curl->addOption(CURLOPT_POST, false);
+                $curl->addOption(CURLOPT_CUSTOMREQUEST, 'DELETE');
                 break;
             case 'PATCH':
-                curl_setopt($ch,CURLOPT_POST,true);
-                curl_setopt($ch,CURLOPT_CUSTOMREQUEST,'PATCH');
+                $curl->addOption(CURLOPT_POST, true);
+                $curl->addOption(CURLOPT_CUSTOMREQUEST, 'PATCH');
                 break;
             case 'PUT':
-                curl_setopt($ch,CURLOPT_POST,true);
-                curl_setopt($ch,CURLOPT_PUT, true);
+                $curl->addOption(CURLOPT_POST, true);
+                $curl->addOption(CURLOPT_CUSTOMREQUEST, 'PUT');
                 break;
 
         }
 
-        curl_setopt($ch, CURLOPT_URL, $host);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'MageMonkey/'); // @todo put the version of MageMonkey
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','Authorization: apikey '.$key,'Cache-Control: no-cache'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-        $response       = curl_exec($ch);
-//        $this->_logger->info($response);
-        $header_size    = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $header         = substr($response, 0, $header_size);
-        $body           = substr($response, $header_size);
-        $responseCode   = curl_getinfo($ch,CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        $data           = json_decode($body);
+//        curl_setopt($ch, CURLOPT_URL, $host);
+        $curl->addOption(CURLOPT_URL, $host);
+        $curl->addOption(CURLOPT_USERAGENT, 'MageMonkey/');
+        $curl->addOption(CURLOPT_HEADER, true);
+        $curl->addOption(CURLOPT_HTTPHEADER, array('Content-Type: application/json','Authorization: apikey '.$key,'Cache-Control: no-cache'));
+        $curl->addOption(CURLOPT_RETURNTRANSFER, 1);
+        $curl->addOption(CURLOPT_CONNECTTIMEOUT, 30);
+        $curl->addOption(CURLOPT_TIMEOUT, $this->_timeout);
+        $curl->addOption(CURLOPT_FOLLOWLOCATION, 1);
+//        $response       = curl_exec($ch);
+        $curl->connect($host);
+        $response = $curl->read();
+        $body = preg_split('/^\r?$/m', $response);
+        $responseCode = $curl->getInfo(CURLINFO_HTTP_CODE);
+        $curl->close();
+        $data           = json_decode($body[count($body)-1]);
         $this->_helper->log(print_r(json_encode($data),1));
         switch($use)
         {
@@ -162,6 +146,37 @@ class MCAPI
                 break;
         }
         return $data;
+    }
+    public function getHost($method, $params)
+    {
+        $dc = '';
+        if(strstr($this->_apiKey,'-'))
+        {
+            list($key,$dc)  = explode('-',$this->_apiKey);
+            if(!$dc)
+            {
+                $dc = 'us1';
+            }
+        }
+        $host   = $dc.'.'.$this->_apiUrl['host'].'/'.$this->_version;
+        if($method)
+        {
+            $host .= "/$method";
+        }
+        if(is_array($params))
+        {
+            foreach($params as $pkey => $value)
+            {
+                if(is_numeric($pkey))
+                {
+                    $host .= "/$value";
+                }
+                else {
+                    $host .= "/$pkey/$value";
+                }
+            }
+        }
+        return [$host,$key];
     }
     public function info()
     {
