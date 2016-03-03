@@ -81,7 +81,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $mergeVars  = unserialize($this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
         foreach($mergeVars as $map)
         {
-            array_merge($merge_vars,$this->_getMergeVarsValue($map, $customer));
+            $merge_vars = array_merge($merge_vars,$this->_getMergeVarsValue($map, $customer));
         }
         return $merge_vars;
     }
@@ -121,7 +121,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'billing_address':
                 case 'shipping_address':
                     $addr = explode('_', $customAtt);
-                    array_merge($merge_vars,$this->_updateMergeVars($key,ucfirst($addr[0]),$customer));
+                    $merge_vars = array_merge($merge_vars,$this->_updateMergeVars($key,ucfirst($addr[0]),$customer));
                     break;
                 case 'telephone':
                     if ($address = $customer->{'getDefaultBillingAddress'}()) {
