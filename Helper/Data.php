@@ -96,12 +96,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             switch ($customAtt) {
                 case 'fname':
                     $val = $customer->getFirstname();
-                    $this->log($val);
                     $merge_vars[$key] = $val;
                     break;
                 case 'lname':
                     $val = $customer->getLastname();
-                    $this->log($val);
                     $merge_vars[$key] = $val;
                     break;
                 case 'gender':
@@ -113,7 +111,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                     break;
                 case 'dob':
-                    $dob = (string)$customer->getData(strtolower($customAtt));
+                    $dob = $customer->getData(strtolower($customAtt));
                     if ($dob) {
                         $merge_vars[$key] = (substr($dob, 5, 2) . '/' . substr($dob, 8, 2));
                     }
@@ -127,7 +125,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     if ($address = $customer->{'getDefaultBillingAddress'}()) {
                         $telephone = $address->getTelephone();
                         if ($telephone) {
-                            $merge_vars['TELEPHONE'] = $telephone;
+                            $merge_vars[$key] = $telephone;
                         }
                     }
                     break;
@@ -135,7 +133,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     if ($address = $customer->{'getDefaultBillingAddress'}()) {
                         $company = $address->getCompany();
                         if ($company) {
-                            $merge_vars['COMPANY'] = $company;
+                            $merge_vars[$key] = $company;
                         }
                     }
                     break;
