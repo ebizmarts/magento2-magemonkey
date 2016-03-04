@@ -21,24 +21,37 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
      * @var \|\PHPUnit_Framework_MockObject_MockObject|\PHPUnit_Framework_MockObject_MockObject
      */
     protected $_apiMock;
-    /**
-     * @var \Ebizmarts\MageMonkey\Helper\Data|\PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $_helperMock;
 
     protected function setUp()
     {
-        $this->_apiMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\Api')
+        $apiMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\Api')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->_helperMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Helper\Data')
+        $helperMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Helper\Data')
             ->disableOriginalConstructor()
             ->getMock();
+        $mcapiMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\MCAPI')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $helperMock->expects($this->any())
+            ->method('getApiKey')
+            ->willReturn('apikey');
+
+        $options = array('account_name'=>'ebizmarts','total_subscribers'=>5,'contact'=>(object)array('company'=>'ebizmarts'));
+        $mcapiMock->expects($this->any())
+            ->method('info')
+            ->willReturn((object)$options);
+
+        $apiMock->expects($this->any())
+            ->method('loadByStore')
+            ->willReturn($mcapiMock);
+
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
         $this->_collection = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Config\Source\Details',
             [
-                'helper' => $this->_helperMock,
-                'api' => $this->_apiMock
+                'helper' => $helperMock,
+                'api' => $apiMock
             ]
         );
 

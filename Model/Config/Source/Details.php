@@ -55,11 +55,11 @@ class Details  implements \Magento\Framework\Option\ArrayInterface
             ];
         }
     }
-    public function toArray()
-    {
-        return array(
-            'Account Name' => $this->_options->account_name
-        );
-
-    }
+//    public function toArray()
+//    {
+//        return array(
+//            'Account Name' => $this->_options->account_name
+//        );
+//
+//    }
 }
