@@ -49,13 +49,6 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
     {
         return $this->toHtml();
     }
-    /**
-     * @return bool
-     */
-    public function magemonkeyEnabled()
-    {
-        return false;
-    }
     public function getPxParams()
     {
         $modules = $this->_loader->load();

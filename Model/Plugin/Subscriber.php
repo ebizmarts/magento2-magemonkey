@@ -67,10 +67,7 @@ class Subscriber
         $subscriber->loadByCustomerId($customerId);
         $storeId = $subscriber->getStoreId();
         if($this->_helper->isMonkeyEnabled($storeId)) {
-            $this->_helper->log($subscriber->getEmail());
             $customer = $this->_customer->load($customerId);
-            $this->_helper->log($customer->getId());
-            $this->_helper->log($customer->getFirstname());
             $mergeVars = $this->_helper->getMergeVars($customer);
             $api = $this->_api->loadByStore($subscriber->getStoreId());
             $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
@@ -80,14 +77,11 @@ class Subscriber
             }else{
                 $status = 'subscribed';
             }
-            $this->_helper->log('$this->_helper->getDefaultList()');
-            $this->_helper->log($this->_helper->getDefaultList());
             if($mergeVars){
                 $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status, 'merge_fields' => $mergeVars);
             }else {
                 $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status);
             }
-            $this->_helper->log(var_export(json_encode($data), 1));
             $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
             if (isset($return->id)) {
                 $subscriber->setMagemonkeyId($return->id);
