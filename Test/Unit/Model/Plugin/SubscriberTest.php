@@ -17,104 +17,20 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
      * @var \Ebizmarts\MageMonkey\Model\Plugin\Subscriber
      */
     protected $plugin;
-
-
-    /**
-     * @var \Magento\Newsletter\Model\SubscriberFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $subscriberFactory;
-
-    /**
-     * @var \Magento\Newsletter\Model\Subscriber|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $subscriber;
-
-
-    private $groupRepositoryInterface;
-    private $scopeConfig;
-    private $customerRepository;
-    private $customerAccountManagement;
-    private $inlineTranslation;
-    private $objectManager;
     protected $helperMock;
+    protected $subscriberMock;
 
 
     public function setUp(){
-        $newsletterDataMock = $this->getMock('Magento\Newsletter\Helper\Data', [], [], '', false);
-        $scopeConfigMock = $this->getMock('Magento\Framework\App\Config\ScopeConfigInterface');
-        $transportBuilderMock = $this->getMock(
-            'Magento\Framework\Mail\Template\TransportBuilder',
-            [
-                'setTemplateIdentifier',
-                'setTemplateOptions',
-                'setTemplateVars',
-                'setFrom',
-                'addTo',
-                'getTransport'
-            ],
-            [],
-            '',
-            false
-        );
-        $storeManagerMock = $this->getMock('Magento\Store\Model\StoreManagerInterface');
-        $customerSessionMock = $this->getMock(
-            'Magento\Customer\Model\Session',
-            [
-                'isLoggedIn',
-                'getCustomerDataObject',
-                'getCustomerId'
-            ],
-            [],
-            '',
-            false
-        );
-        $this->customerRepository = $this->getMock('Magento\Customer\Api\CustomerRepositoryInterface');
-        $this->customerAccountManagement = $this->getMock('Magento\Customer\Api\AccountManagementInterface');
-        $this->inlineTranslation = $this->getMock('Magento\Framework\Translate\Inline\StateInterface');
-        $resourceMock = $this->getMock(
-            'Magento\Newsletter\Model\ResourceModel\Subscriber',
-            [
-                'loadByEmail',
-                'getIdFieldName',
-                'save',
-                'loadByCustomerData',
-                'received'
-            ],
-            [],
-            '',
-            false
-        );
-        $customerDataMock = $this->getMockBuilder('Magento\Customer\Api\Data\CustomerInterface')
+
+
+        $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+
+        $this->subscriberMock = $this->getMockBuilder('Magento\Newsletter\Model\Subscriber')
+            ->disableOriginalConstructor()
+//            ->setMethods(['getMageMonkeyId'])
             ->getMock();
-        $this->customerRepository->expects($this->atLeastOnce())
-            ->method('getById')
-            ->willReturn($customerDataMock);
-        $resourceMock->expects($this->atLeastOnce())
-            ->method('loadByCustomerData')
-            ->with($customerDataMock)
-            ->willReturn(
-                [
-                    'subscriber_id' => 1,
-                    'subscriber_status' => 1
-                ]
-            );
 
-        $this->objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-
-        $this->subscriber = $this->objectManager->getObject(
-            'Magento\Newsletter\Model\Subscriber',
-            [
-                'newsletterData' => $newsletterDataMock,
-                'scopeConfig' => $scopeConfigMock,
-                'transportBuilder' => $transportBuilderMock,
-                'storeManager' => $storeManagerMock,
-                'customerSession' => $customerSessionMock,
-                'customerRepository' => $this->customerRepository,
-                'customerAccountManagement' => $this->customerAccountManagement,
-                'inlineTranslation' => $this->inlineTranslation,
-                'resource' => $resourceMock
-            ]
-        );
 
 
         $this->helperMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Helper\Data')
@@ -149,33 +65,32 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
             ->method('listDeleteMember')
             ->willReturn(true);
 
-        $this->plugin = new \Ebizmarts\MageMonkey\Model\Plugin\Subscriber(
-            $this->helperMock,
-            $customerMock,
-            $customerSessionMock,
-            $apiMock
-        );
+        $this->plugin = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Plugin\Subscriber',
+                [
+                    'helper' => $this->helperMock,
+                    'customer' => $customerMock,
+                    'customerSession' => $customerSessionMock,
+                    'api' => $apiMock
+                ]);
     }
     public function testBeforeUnsubscribeCustomerById()
     {
-
-        $customerId = 1;
-        $customerDataMock = $this->getMockBuilder('Magento\Customer\Api\Data\CustomerInterface')
-            ->getMock();
-        $this->customerRepository->expects($this->atLeastOnce())
-            ->method('getById')
-            ->with($customerId)->willReturn($customerDataMock);
-
-        $this->plugin->beforeUnsubscribeCustomerById($this->subscriber, 1);
+//        $this->subscriberMock->setMagemonkeyId(1);
+        $this->subscriberMock->expects($this->any())
+            ->method('loadByCustomerId')
+            ->willReturn($this->subscriberMock);
+        $this->subscriberMock->expects($this->any())
+            ->method('getMagemonkeyId')
+            ->willReturn(1);
+        $this->plugin->beforeUnsubscribeCustomerById($this->subscriberMock, 1);
     }
 
     public function testBeforeSubscribeCustomerById()
     {
-        $this->subscriber->setMagemonkeyId(1);
-        $this->plugin->beforeSubscribeCustomerById($this->subscriber, 1);
+        $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
         $this->helperMock->expects($this->any())->method('isDoubleOptInEnabled')->willReturn(true);
-        $this->plugin->beforeSubscribeCustomerById($this->subscriber, 1);
+        $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
         $this->helperMock->expects($this->once())->method('getMergeVars')->willReturn(array('FNAME'=>'fname'));
-        $this->plugin->beforeSubscribeCustomerById($this->subscriber, 1);
+        $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
     }
 }
