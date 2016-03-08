@@ -13,34 +13,51 @@ namespace Ebizmarts\MageMonkey\Model;
 
 class Api
 {
+    /**
+     * @var MCAPI|null
+     */
     protected $_mcapi   = null;
-    protected $apiHost  = null;
+    /**
+     * @var \Ebizmarts\MageMonkey\Helper\Data|null
+     */
     protected $_helper = null;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface|null
+     */
+    protected $_storeManager = null;
 
     /**
-     * @param array $args
+     * Api constructor.
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
+     * @param MCAPI $mcapi
      */
     public function __construct(
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Helper\Data $helper,
         \Ebizmarts\MageMonkey\Model\MCAPI $mcapi
     )
     {
         $this->_helper = $helper;
         $this->_mcapi = $mcapi;
+        $this->_storeManager = $storeManager;
 
     }
     public function __call($method,$args=null)
     {
+        if(!$this->_mcapi->getApiKey()) {
+            $this->loadByStore();
+        }
         return $this->call($method,$args);
     }
     public function call($command,$args)
     {
+        $result = null;
         if($args)
         {
             if(is_callable(array($this->_mcapi, $command))) {
-                $reflectionMethod = new ReflectionMethod('Ebizmarts\Magemonkey\Model\MCAPI',$command);
-                $result = $reflectionMethod->invoqueArgs($this->_mcapi,$args);
+                $reflectionMethod = new \ReflectionMethod('Ebizmarts\MageMonkey\Model\MCAPI',$command);
+                $result = $reflectionMethod->invokeArgs($this->_mcapi,$args);
             }
         }
         else
@@ -53,7 +70,13 @@ class Api
     }
 
     public function loadByStore($store = null){
-        $apiKey = $this->_helper->getApiKey($store);
-        return $this->_mcapi->load($apiKey);
+        if($store) {
+            $apiKey = $this->_helper->getApiKey($store);
+        }
+        else {
+            $apiKey = $this->_helper->getApiKey($this->_storeManager->getStore()->getId());
+        }
+        $this->_mcapi->load($apiKey);
+        return $this;
     }
 }

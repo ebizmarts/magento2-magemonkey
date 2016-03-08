@@ -36,7 +36,10 @@ class MCAPI
         $this->_helper = $helper;
         $this->_curl = $curl;
     }
-
+    public function getApiKey()
+    {
+        return $this->_apiKey;
+    }
     public function load($apiKey, $secure = false){
         $this->_apiKey  = $apiKey;
         $this->_secure  = $secure;

@@ -20,9 +20,6 @@ class MonkeylistTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $apiMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\Api')
-            ->disableOriginalConstructor()
-            ->getMock();
         $helperMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Helper\Data')
             ->disableOriginalConstructor()
             ->getMock();
@@ -47,19 +44,35 @@ class MonkeylistTest extends \PHPUnit_Framework_TestCase
             ->method('lists')
             ->willReturn($options);
 
-        $apiMock->expects($this->any())
-            ->method('loadByStore')
-            ->willReturn($mcapiMock);
-
         $mcapiEmptyMock->expects($this->any())
             ->method('lists')
             ->willReturn($optionsEmpty);
 
         $apiEmptyMock->expects($this->any())
             ->method('loadByStore')
-            ->willReturn($mcapiEmptyMock);
+            ->willReturn($apiEmptyMock);
+        $storeManagerMock = $this->getMockBuilder('Magento\Store\Model\StoreManagerInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $storeMock = $this->getMockBuilder('Magento\Store\Model\Store')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $storeMock->expects($this->any())
+            ->method('getId')
+            ->willReturn(1);
+        $storeManagerMock->expects($this->any())
+            ->method('getStore')
+            ->willReturn($storeMock);
 
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $apiMock = $objectManager->getObject('Ebizmarts\Magemonkey\Model\Api',
+            [
+                'helper' => $helperMock,
+                'mcapi'  => $mcapiMock,
+                'storeManager' => $storeManagerMock
+            ]
+        );
+
         $this->_options = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Config\Source\Monkeylist',
             [
                 'api' => $apiMock,
@@ -72,11 +85,13 @@ class MonkeylistTest extends \PHPUnit_Framework_TestCase
                 'helper' => $helperMock
             ]
         );
+        $this->api = $apiMock;
     }
 
     public function testToOptionArray()
     {
         //$this->assertNotEmpty($this->_options->lists);
+        $this->api->loadByStore(1);
         $this->assertNotEmpty($this->_options->toOptionArray());
         foreach ($this->_options->toOptionArray() as $item) {
             $this->assertArrayHasKey('value', $item);

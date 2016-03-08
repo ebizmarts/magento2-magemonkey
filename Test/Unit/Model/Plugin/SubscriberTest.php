@@ -73,6 +73,10 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
                     'api' => $apiMock
                 ]);
     }
+
+    /**
+     * @covers Ebizmarts\MageMonkey\Model\Plugin\Subscriber::beforeUnsubscribeCustomerById
+     */
     public function testBeforeUnsubscribeCustomerById()
     {
 //        $this->subscriberMock->setMagemonkeyId(1);
@@ -84,7 +88,9 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
             ->willReturn(1);
         $this->plugin->beforeUnsubscribeCustomerById($this->subscriberMock, 1);
     }
-
+    /**
+     * @covers Ebizmarts\MageMonkey\Model\Plugin\Subscriber::beforeSubscribeCustomerById
+     */
     public function testBeforeSubscribeCustomerById()
     {
         $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);

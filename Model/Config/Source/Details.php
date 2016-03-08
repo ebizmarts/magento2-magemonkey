@@ -38,7 +38,7 @@ class Details  implements \Magento\Framework\Option\ArrayInterface
         $this->_helper  = $helper;
         $this->_api = $api;
         if($helper->getApiKey()) {
-            $this->_options = $this->_api->loadByStore()->info();
+            $this->_options = $this->_api->info();
         }
     }
     public function toOptionArray()
