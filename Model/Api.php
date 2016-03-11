@@ -13,19 +13,34 @@ namespace Ebizmarts\MageMonkey\Model;
 
 class Api
 {
+    /**
+     * @var MCAPI|null
+     */
     protected $_mcapi   = null;
-    protected $apiHost  = null;
+    /**
+     * @var \Ebizmarts\MageMonkey\Helper\Data|null
+     */
+    protected $_helper = null;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface|null
+     */
+    protected $_storeManager = null;
 
     /**
-     * @param array $args
+     * Api constructor.
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
+     * @param MCAPI $mcapi
      */
-    public function __construct(array $args,
-                                \Ebizmarts\MageMonkey\Helper\Data $helper
+    public function __construct(
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Ebizmarts\MageMonkey\Helper\Data $helper,
+        \Ebizmarts\MageMonkey\Model\MCAPI $mcapi
     )
     {
-        $apiKey         = (!isset($args['apiKey'])) ? $helper->getApiKey() : $args['apiKey'];
-        $this->_mcapi = new \Ebizmarts\MageMonkey\Model\MCAPI($apiKey,$helper);
+        $this->_helper = $helper;
+        $this->_mcapi = $mcapi;
+        $this->_storeManager = $storeManager;
 
     }
     public function __call($method,$args=null)
@@ -34,13 +49,19 @@ class Api
     }
     public function call($command,$args)
     {
+        $result = null;
         if($args)
         {
-            $result = call_user_func_array(array($this->_mcapi, $command), $args);
+            if(is_callable(array($this->_mcapi, $command))) {
+                $reflectionMethod = new \ReflectionMethod($this->_mcapi,$command);
+                $result = $reflectionMethod->invokeArgs($this->_mcapi,$args);
+            }
         }
         else
         {
-            $result = $this->_mcapi->{$command}();
+            if(is_callable(array($this->_mcapi, $command))) {
+                $result = $this->_mcapi->{$command}();
+            }
         }
         return $result;
     }

@@ -14,17 +14,29 @@ namespace Ebizmarts\MageMonkey\Model\Config\Source;
 
 class Details  implements \Magento\Framework\Option\ArrayInterface
 {
+    /**
+     * @var \Ebizmarts\MageMonkey\Model\Api|null
+     */
     protected $_api     = null;
+    /**
+     * @var null
+     */
     protected $_options = null;
+    /**
+     * @var \Ebizmarts\MageMonkey\Helper\Data|null
+     */
     protected $_helper  = null;
 
     /**
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
      */
-    public function __construct(\Ebizmarts\MageMonkey\Helper\Data $helper)
+    public function __construct(
+        \Ebizmarts\MageMonkey\Helper\Data $helper,
+        \Ebizmarts\MageMonkey\Model\Api $api
+    )
     {
         $this->_helper  = $helper;
-        $this->_api     = New \Ebizmarts\MageMonkey\Model\Api(array(),$helper);
+        $this->_api = $api;
         if($helper->getApiKey()) {
             $this->_options = $this->_api->info();
         }
@@ -43,11 +55,11 @@ class Details  implements \Magento\Framework\Option\ArrayInterface
             ];
         }
     }
-    public function toArray()
-    {
-        return array(
-            'Account Name' => $this->_options->account_name
-        );
-
-    }
+//    public function toArray()
+//    {
+//        return array(
+//            'Account Name' => $this->_options->account_name
+//        );
+//
+//    }
 }
