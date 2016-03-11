@@ -28,7 +28,7 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
 
         $this->subscriberMock = $this->getMockBuilder('Magento\Newsletter\Model\Subscriber')
             ->disableOriginalConstructor()
-//            ->setMethods(['getMageMonkeyId'])
+            ->setMethods(['getMageMonkeyId','loadByCustomerId'])
             ->getMock();
 
 
@@ -79,11 +79,10 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
      */
     public function testBeforeUnsubscribeCustomerById()
     {
-//        $this->subscriberMock->setMagemonkeyId(1);
-        $this->subscriberMock->expects($this->any())
+        $this->subscriberMock->expects($this->once())
             ->method('loadByCustomerId')
             ->willReturn($this->subscriberMock);
-        $this->subscriberMock->expects($this->any())
+        $this->subscriberMock->expects($this->exactly(2))
             ->method('getMagemonkeyId')
             ->willReturn(1);
         $this->plugin->beforeUnsubscribeCustomerById($this->subscriberMock, 1);
@@ -94,7 +93,7 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
     public function testBeforeSubscribeCustomerById()
     {
         $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
-        $this->helperMock->expects($this->any())->method('isDoubleOptInEnabled')->willReturn(true);
+        $this->helperMock->expects($this->exactly(2))->method('isDoubleOptInEnabled')->willReturn(true);
         $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
         $this->helperMock->expects($this->once())->method('getMergeVars')->willReturn(array('FNAME'=>'fname'));
         $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);

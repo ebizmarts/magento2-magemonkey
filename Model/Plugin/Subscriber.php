@@ -54,8 +54,8 @@ class Subscriber
         $subscriber->loadByCustomerId($customerId);
         if($subscriber->getMagemonkeyId())
         {
-            $api = $this->_api->loadByStore($subscriber->getStoreId());
-            $api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
+            //$api = $this->_api->loadByStore($subscriber->getStoreId());
+            $this->_api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
             $subscriber->setMagemonkeyId('');
         }
     }
