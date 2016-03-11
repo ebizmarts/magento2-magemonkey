@@ -14,19 +14,23 @@ namespace Ebizmarts\MageMonkey\Model;
 class MCAPI
 {
     protected $_version     = "3.0";
-//    protected $_apiUrl      = null;
     protected $_timeout     = 300;
     protected $_chunkSize   = 8192;
     protected $_apiKey      = null;
     protected $_secure      = false;
+    /**
+     * @var \Ebizmarts\MageMonkey\Helper\Data|null
+     */
     protected $_helper      = null;
-
+    /**
+     * @var \Magento\Framework\HTTP\Adapter\Curl|null
+     */
     protected $_curl = null;
 
     /**
-     * @param $apiKey
+     * MCAPI constructor.
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
-     * @param bool $secure
+     * @param \Magento\Framework\HTTP\Adapter\Curl $curl
      */
     public function __construct(
         \Ebizmarts\MageMonkey\Helper\Data $helper,
