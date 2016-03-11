@@ -35,6 +35,8 @@ class MCAPI
     {
         $this->_helper = $helper;
         $this->_curl = $curl;
+        $this->_apiKey = $helper->getApiKey();
+        $this->_secure = false;
     }
     public function getApiKey()
     {
@@ -56,7 +58,7 @@ class MCAPI
     {
         return $this->_timeout;
     }
-    public function useSecure($val)
+    protected function useSecure($val)
     {
         if($val === true) {
             $this->_secure  = true;
@@ -65,8 +67,9 @@ class MCAPI
         {
             $this->_secure  = false;
         }
+        return $this;
     }
-    public function callServer($use = 'GET',$method = null, $params = null,$fields = null)
+    protected function callServer($use = 'GET',$method = null, $params = null,$fields = null)
     {
         $dc = '';
         $key = '';
@@ -140,7 +143,7 @@ class MCAPI
         }
         return $data;
     }
-    public function getHost($method, $params)
+    protected function getHost($method, $params)
     {
         $dc = '';
         if(strstr($this->_apiKey,'-'))

@@ -23,13 +23,16 @@ class ApiTest  extends \PHPUnit_Framework_TestCase
             ->getMock();
         $helperMock->expects($this->any())
             ->method('getApiKey')
-            ->willReturn('apikey');
+            ->willReturn('api-key');
 
         $mcapiMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\MCAPI')
             ->disableOriginalConstructor()
             ->getMock();
-        $mcapiMock->expects($this->any())
+        $mcapiMock->expects($this->once())
             ->method('info')
+            ->willReturn(true);
+        $mcapiMock->expects($this->once())
+            ->method('listMembers')
             ->willReturn(true);
         $storeManagerMock = $this->getMockBuilder('Magento\Store\Model\StoreManagerInterface')
             ->disableOriginalConstructor()
@@ -59,12 +62,5 @@ class ApiTest  extends \PHPUnit_Framework_TestCase
     {
         $this->api->info();
         $this->api->listMembers(1);
-    }
-    /**
-     * @covers Ebizmarts\MageMonkey\Model\Api::loadByStore
-     */
-    public function testLoadByStore()
-    {
-        $this->api->loadByStore();
     }
 }

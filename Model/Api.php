@@ -45,9 +45,6 @@ class Api
     }
     public function __call($method,$args=null)
     {
-        if(!$this->_mcapi->getApiKey()) {
-            $this->loadByStore();
-        }
         return $this->call($method,$args);
     }
     public function call($command,$args)
@@ -56,7 +53,7 @@ class Api
         if($args)
         {
             if(is_callable(array($this->_mcapi, $command))) {
-                $reflectionMethod = new \ReflectionMethod('Ebizmarts\MageMonkey\Model\MCAPI',$command);
+                $reflectionMethod = new \ReflectionMethod($this->_mcapi,$command);
                 $result = $reflectionMethod->invokeArgs($this->_mcapi,$args);
             }
         }
@@ -67,16 +64,5 @@ class Api
             }
         }
         return $result;
-    }
-
-    public function loadByStore($store = null){
-        if($store) {
-            $apiKey = $this->_helper->getApiKey($store);
-        }
-        else {
-            $apiKey = $this->_helper->getApiKey($this->_storeManager->getStore()->getId());
-        }
-        $this->_mcapi->load($apiKey);
-        return $this;
     }
 }

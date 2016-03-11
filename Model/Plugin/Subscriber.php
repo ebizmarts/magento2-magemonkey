@@ -69,7 +69,7 @@ class Subscriber
         if($this->_helper->isMonkeyEnabled($storeId)) {
             $customer = $this->_customer->load($customerId);
             $mergeVars = $this->_helper->getMergeVars($customer);
-            $api = $this->_api->loadByStore($subscriber->getStoreId());
+            $api = $this->_api;
             $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
                 && $this->_customerSession->getCustomerDataObject()->getEmail() == $subscriber->getSubscriberEmail();
             if($this->_helper->isDoubleOptInEnabled($storeId) && !$isSubscribeOwnEmail) {
