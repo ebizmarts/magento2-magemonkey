@@ -44,6 +44,8 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
         $helperMock->expects($this->any())
             ->method('getApiKey')
             ->willReturn('api-key');
+
+
         $this->_mcapi = $objectManager->getObject('Ebizmarts\Magemonkey\Model\MCAPI',
             [
                 'helper' => $helperMock,
@@ -71,6 +73,7 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::info
+     * @covers Ebizmarts\MageMonkey\Model\MCAPI::callServer
      */
     public function testInfo()
     {
@@ -78,6 +81,7 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::lists
+     * @covers Ebizmarts\MageMonkey\Model\MCAPI::callServer
      */
     public function testLists()
     {
@@ -85,6 +89,7 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::listMembers
+     * @covers Ebizmarts\MageMonkey\Model\MCAPI::callServer
      */
     public function testListMembers()
     {
@@ -92,6 +97,7 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::listCreateMember
+     * @covers Ebizmarts\MageMonkey\Model\MCAPI::callServer
      */
     public function testListCreateMember()
     {
@@ -99,6 +105,8 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::listDeleteMember
+     * @covers Ebizmarts\MageMonkey\Model\MCAPI::callServer
+     * @covers Ebizmarts\MageMonkey\Model\MCAPI::getHost
      */
     public function testListDeleteMember()
     {
