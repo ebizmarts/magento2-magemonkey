@@ -26,25 +26,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     protected $_storeManager;
     protected $_mlogger;
-    protected $_groupRepositoryInterface;
+    protected $_groupRegistry;
+    protected $_scopeConfig;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Ebizmarts\MageMonkey\Model\Logger\Magemonkey $logger
-     * @param \Magento\Customer\Api\GroupRepositoryInterface $groupRepositoryInterface
+     * @param \Magento\Customer\Model\GroupRegistry $groupRegistry
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Model\Logger\Magemonkey $logger,
-        \Magento\Customer\Api\GroupRepositoryInterface $groupRepositoryInterface
+        \Magento\Customer\Model\GroupRegistry $groupRegistry,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
         $this->_storeManager                = $storeManager;
         $this->_mlogger                     = $logger;
-        $this->_groupRepositoryInterface    = $groupRepositoryInterface;
+        $this->_groupRegistry               = $groupRegistry;
+        $this->_scopeConfig                 = $scopeConfig;
         parent::__construct($context);
     }
 
@@ -62,7 +65,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function getDefaultList($store = null)
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_LIST, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
+        return $this->_scopeConfig->getValue(self::XML_PATH_LIST, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
     }
     public function getLogger()
     {
@@ -70,7 +73,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function log($message,$store=null)
     {
-        if($this->scopeConfig->getValue(self::XML_PATH_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store))
+        if($this->_scopeConfig->getValue(self::XML_PATH_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store))
         {
             $this->_mlogger->info($message);
         }
@@ -78,7 +81,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getMergeVars($customer,$store = null)
     {
         $merge_vars = array();
-        $mergeVars  = unserialize($this->scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
+        $mergeVars  = unserialize($this->_scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
         foreach($mergeVars as $map)
         {
             $merge_vars = array_merge($merge_vars,$this->_getMergeVarsValue($map, $customer));
@@ -138,15 +141,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                     break;
                 case 'group_id':
-//                        $group_id = (int)$customer->getData(strtolower($customAtt));
-//                        $customerGroup = $this->_groupRepositoryInterface->getList('');
-//                        $this->log(print_r($customerGroup));
-////                        $customerGroup = Mage::helper('customer')->getGroups()->toOptionHash();
-////                        if($group_id == 0){
-////                            $merge_vars[$key] = 'NOT LOGGED IN';
-////                        }else{
-////                            $merge_vars[$key] = $customerGroup[$group_id];
-////                        }
+                    $group_id = (int) $customer->getGroupId();
+                    if ($group_id == 0) {
+                        $merge_vars[$key] = 'NOT LOGGED IN';
+                    } else {
+                        try {
+                            $customerGroup    = $this->_groupRegistry->retrieve($group_id);
+                            $merge_vars[$key] = $customerGroup->getCode();
+                        } catch (\Exception $e) {
+                        }
+                    }
                     break;
                 default:
                     if (($value = (string)$customer->getData(strtolower($customAtt)))) {
