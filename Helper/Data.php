@@ -141,12 +141,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                     break;
                 case 'group_id':
-                    $group_id = (int) $customer->getGroupId();
-                    if ($group_id == 0) {
-                        $merge_vars[$key] = 'NOT LOGGED IN';
-                    } else {
-                        $merge_vars = array_merge($merge_vars,$this->getCustomerGroup($key,$group_id));
-                    }
+                    $merge_vars = array_merge($merge_vars,$this->_getCustomerGroup($customer,$key));
                     break;
                 default:
                     if (($value = (string)$customer->getData(strtolower($customAtt)))) {
@@ -158,14 +153,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return $merge_vars;
         }
     }
-    protected function getCustomerGroup($key,$group_id)
+    protected function _getCustomerGroup($customer,$key)
     {
         $merge_vars = array();
-        try {
-            $customerGroup    = $this->_groupRegistry->retrieve($group_id);
-            $merge_vars[$key] = $customerGroup->getCode();
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        $group_id = (int) $customer->getGroupId();
+        if($group_id == 0) {
+            $merge_vars[$key] = 'NOT LOGGED IN';
+        } else {
+            try {
+                $customerGroup = $this->_groupRegistry->retrieve($group_id);
+                $merge_vars[$key] = $customerGroup->getCode();
+            } catch (\Exception $e) {
+                throw new \Exception($e->getMessage());
+            }
         }
         return $merge_vars;
     }
