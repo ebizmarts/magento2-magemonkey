@@ -54,13 +54,13 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $options = (object)array('id'=>1);
-        $mcapiMock->expects($this->any())
+        $apiMock->expects($this->any())
             ->method('listCreateMember')
             ->willReturn($options);
 
-        $apiMock->expects($this->any())
-            ->method('loadByStore')
-            ->willReturn($mcapiMock);
+//        $apiMock->expects($this->any())
+//            ->method('loadByStore')
+//            ->willReturn($mcapiMock);
         $apiMock->expects($this->any())
             ->method('listDeleteMember')
             ->willReturn(true);

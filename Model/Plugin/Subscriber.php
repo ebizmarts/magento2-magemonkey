@@ -82,9 +82,16 @@ class Subscriber
             }else {
                 $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status);
             }
-            $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
-            if (isset($return->id)) {
-                $subscriber->setMagemonkeyId($return->id);
+            try {
+                $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
+                if (isset($return->id)) {
+                    $subscriber->setMagemonkeyId($return->id);
+                }
+            }
+            catch(\Exception $e) {
+                if (stripos($e->getMessage(), ' Status: 400 ') === false) {
+                    throw new \Exception( $e->getMessage() );
+                }
             }
         }
         return [$customerId];
