@@ -149,6 +149,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $customerGroup    = $this->_groupRegistry->retrieve($group_id);
                             $merge_vars[$key] = $customerGroup->getCode();
                         } catch (\Exception $e) {
+                            throw new \Exception($e->getMessage());
                         }
                     }
                     break;
