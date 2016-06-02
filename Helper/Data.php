@@ -40,14 +40,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Model\Logger\Magemonkey $logger,
-        \Magento\Customer\Model\GroupRegistry $groupRegistry,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Customer\Model\GroupRegistry $groupRegistry
     )
     {
         $this->_storeManager                = $storeManager;
         $this->_mlogger                     = $logger;
         $this->_groupRegistry               = $groupRegistry;
-        $this->_scopeConfig                 = $scopeConfig;
+        $this->_scopeConfig                 = $context->getScopeConfig();
         parent::__construct($context);
     }
 
