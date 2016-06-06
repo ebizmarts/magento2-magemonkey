@@ -119,6 +119,29 @@ class DataTest extends \PHPUnit_Framework_TestCase
 //
 //        $ret = $this->_helper->getMergeVars($customerMock);
 //    }
+
+    /**
+     * On initial module installation there are no Magento/Mailchimp mappings configured.
+     * This breaks customer registration due to the following error: Invalid argument supplied for foreach()
+     */
+    public function testGetMergeVarsWithNoMapping()
+    {
+        $customerMock = $this->getMockBuilder('Magento\Customer\Model\Customer')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->_scopeMock->expects($this->atLeastOnce())
+            ->method('getValue')
+            ->willReturn(null);
+
+        $customerMock->expects($this->any())
+            ->method('getData')
+            ->will($this->returnCallback([$this, '_getData']));
+
+        $this->_helper->getMergeVars($customerMock);
+    }
+
+
     public function _getData($data)
     {
         switch($data)
