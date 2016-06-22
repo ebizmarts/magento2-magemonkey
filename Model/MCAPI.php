@@ -180,25 +180,31 @@ class MCAPI
     }
     public function info()
     {
-        return $this->callServer();
+        $response = $this->callServer();
+        return $response;
     }
     public function lists()
     {
-        return $this->callServer('GET','lists');
+        $response = $this->callServer('GET','lists');
+        return $response;
     }
     public function listMembers($listId)
     {
-        return $this->callServer('GET','lists',array(0=>$listId,1=>'members'));
+        $response = $this->callServer('GET','lists',array(0=>$listId,1=>'members'));
+        return $response;
     }
     public function listCreateMember($listId,$memberData)
     {
-        return $this->callServer('POST','lists',array(0=>$listId,1=>'members'),$memberData);
+        $response = $this->callServer('POST','lists',array(0=>$listId,1=>'members'),$memberData);
+        $this->_helper->log('Create Member');
+        $this->_helper->log($response);
+        return $response;
     }
     public function listDeleteMember($listId,$memberId)
     {
-        return $this->callServer('DELETE','lists',array(0=>$listId,'members'=>$memberId));
+        $response = $this->callServer('DELETE','lists',array(0=>$listId,'members'=>$memberId));
+        $this->_helper->log('Delete Member with Id: '.$memberId);
+        $this->_helper->log($response);
+        return $response;
     }
-    /*public function listWebhookAdd(){
-
-    }*/
 }

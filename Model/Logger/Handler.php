@@ -9,16 +9,21 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace Ebizmarts\MageMonkey\Model\Logger\Handler;
+namespace Ebizmarts\MageMonkey\Model\Logger;
 
-use Magento\Framework\Filesystem\DriverInterface;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-class System extends \Magento\Framework\Logger\Handler\System
+class Handler extends \Magento\Framework\Logger\Handler\Base
 {
     /**
+     * File name
      * @var string
      */
     protected $fileName = '/var/log/MageMonkey.log';
+
+    /**
+     * Logging level
+     * @var int
+     */
+    protected $loggerType = Logger::INFO;
 }

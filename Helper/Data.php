@@ -32,14 +32,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Ebizmarts\MageMonkey\Model\Logger\Magemonkey $logger
+     * @param \Ebizmarts\MageMonkey\Model\Logger\Logger $logger
      * @param \Magento\Customer\Model\GroupRegistry $groupRegistry
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Ebizmarts\MageMonkey\Model\Logger\Magemonkey $logger,
+        \Ebizmarts\MageMonkey\Model\Logger\Logger $logger,
         \Magento\Customer\Model\GroupRegistry $groupRegistry
     )
     {
@@ -74,7 +74,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         if($this->_scopeConfig->getValue(self::XML_PATH_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store))
         {
-            $this->_mlogger->info($message);
+            $this->_mlogger->MonkeyLog($message);
         }
     }
     public function getMergeVars($customer,$store = null)

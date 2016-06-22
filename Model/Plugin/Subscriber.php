@@ -27,6 +27,10 @@ class Subscriber
      */
     protected $_customerSession;
     /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
+    /**
      * @param \Ebizmarts\MageMonkey\Helper\Data $helper
      * @param \Magento\Customer\Model\Customer $customer
      * @param \Magento\Customer\Model\Session $customerSession
@@ -37,6 +41,7 @@ class Subscriber
         \Ebizmarts\MageMonkey\Helper\Data $helper,
         \Magento\Customer\Model\Customer $customer,
         \Magento\Customer\Model\Session $customerSession,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Model\Api $api
 
     )
@@ -44,6 +49,7 @@ class Subscriber
         $this->_helper          = $helper;
         $this->_customer        = $customer;
         $this->_customerSession = $customerSession;
+        $this->_storeManager    = $storeManager;
         $this->_api             = $api;
     }
 
@@ -58,6 +64,7 @@ class Subscriber
             $this->_api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
             $subscriber->setMagemonkeyId('');
         }
+        return array($customerId);
     }
 
     public function beforeSubscribeCustomerById(
@@ -94,6 +101,53 @@ class Subscriber
                 }
             }
         }
-        return [$customerId];
+        return array($customerId);
+    }
+
+    public function beforeSubscribe(
+        $subscriber, $email
+    )
+    {
+        $storeId = $this->_storeManager->getStore()->getId();
+
+        $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
+            && $this->_customerSession->getCustomerDataObject()->getEmail() == $email;
+
+        if(!$isSubscribeOwnEmail)
+        {
+            if($this->_helper->isMonkeyEnabled($storeId)) {
+                $api = $this->_api;
+                if($this->_helper->isDoubleOptInEnabled($storeId)) {
+                    $status = 'pending';
+                }else{
+                    $status = 'subscribed';
+                }
+                $data = array('list_id' => $this->_helper->getDefaultList(), 'email_address' => $email, 'email_type' => 'html', 'status' => $status);
+                try {
+                    $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
+                    if (isset($return->id)) {
+                        $subscriber->setMagemonkeyId($return->id);
+                    }
+                }
+                catch(\Exception $e) {
+                    if (stripos($e->getMessage(), ' Status: 400 ') === false) {
+                        throw new \Exception( $e->getMessage() );
+                    }
+                }
+            }
+        }
+        return array($email);
+    }
+
+    public function beforeUnsubscribe(
+        $subscriber
+    )
+    {
+        if($subscriber->getMagemonkeyId())
+        {
+            $this->_api->listDeleteMember($this->_helper->getDefaultList(),$subscriber->getMagemonkeyId());
+            $subscriber->setMagemonkeyId('');
+        }
+        return null;
     }
 }
