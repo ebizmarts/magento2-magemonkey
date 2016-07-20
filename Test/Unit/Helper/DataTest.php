@@ -41,7 +41,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $storeManagerMock = $this->getMockBuilder('Magento\Store\Model\StoreManagerInterface')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->_logger = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\Logger\Magemonkey')
+        $this->_logger = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\Logger\Logger')
             ->disableOriginalConstructor()
             ->getMock();
         $groupRegistryMock = $this->getMockBuilder('Magento\Customer\Model\GroupRegistry')
