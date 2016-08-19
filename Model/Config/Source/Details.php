@@ -12,7 +12,7 @@
 
 namespace Ebizmarts\MageMonkey\Model\Config\Source;
 
-class Details  implements \Magento\Framework\Option\ArrayInterface
+class Details implements \Magento\Framework\Option\ArrayInterface
 {
     /**
      * @var \Ebizmarts\MageMonkey\Model\Api|null
@@ -33,23 +33,23 @@ class Details  implements \Magento\Framework\Option\ArrayInterface
     public function __construct(
         \Ebizmarts\MageMonkey\Helper\Data $helper,
         \Ebizmarts\MageMonkey\Model\Api $api
-    )
-    {
+    ) {
+    
         $this->_helper  = $helper;
         $this->_api = $api;
-        if($helper->getApiKey()) {
+        if ($helper->getApiKey()) {
             $this->_options = $this->_api->info();
         }
     }
     public function toOptionArray()
     {
-        if(isset($this->_options->account_name)) {
+        if (isset($this->_options->account_name)) {
             return [
                 ['value'=>'Account Name',      'label'=> $this->_options->account_name],
                 ['value'=>'Company',           'label'=> $this->_options->contact->company],
                 ['value'=>'Total Subscribers', 'label'=> $this->_options->total_subscribers],
             ];
-        }else{
+        } else {
             return [
                 ['value'=>'Error','label' => __('Invalid API Key')]
             ];

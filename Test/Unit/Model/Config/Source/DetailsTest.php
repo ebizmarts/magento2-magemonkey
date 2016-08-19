@@ -39,7 +39,7 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
             ->method('getApiKey')
             ->willReturn('apikey');
 
-        $options = array('account_name'=>'ebizmarts','total_subscribers'=>5,'contact'=>(object)array('company'=>'ebizmarts'));
+        $options = ['account_name'=>'ebizmarts','total_subscribers'=>5,'contact'=>(object)['company'=>'ebizmarts']];
         $mcapiMock->expects($this->any())
             ->method('info')
             ->willReturn((object)$options);
@@ -62,7 +62,8 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
             ->willReturn($storeMock);
 
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-        $apiMock = $objectManager->getObject('Ebizmarts\Magemonkey\Model\Api',
+        $apiMock = $objectManager->getObject(
+            'Ebizmarts\Magemonkey\Model\Api',
             [
                 'helper' => $helperMock,
                 'mcapi'  => $mcapiMock,
@@ -73,12 +74,13 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
         $mcapiEmptyMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\MCAPI')
             ->disableOriginalConstructor()
             ->getMock();
-        $optionsEmpty = (object)array('nolists'=>(object)array((object)array()));
+        $optionsEmpty = (object)['nolists'=>(object)[(object)[]]];
         $mcapiEmptyMock->expects($this->any())
             ->method('info')
             ->willReturn($optionsEmpty);
 
-        $apiEmptyMock = $objectManager->getObject('Ebizmarts\Magemonkey\Model\Api',
+        $apiEmptyMock = $objectManager->getObject(
+            'Ebizmarts\Magemonkey\Model\Api',
             [
                 'helper' => $helperMock,
                 'mcapi'  => $mcapiEmptyMock,
@@ -86,19 +88,20 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
             ]
         );
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-        $this->_collection = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Config\Source\Details',
+        $this->_collection = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Model\Config\Source\Details',
             [
                 'helper' => $helperMock,
                 'api' => $apiMock
             ]
         );
-        $this->_collectionEmpty = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Config\Source\Details',
+        $this->_collectionEmpty = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Model\Config\Source\Details',
             [
                 'api' => $apiEmptyMock,
                 'helper' => $helperMock
             ]
         );
-
     }
     public function testToOptionArray()
     {
@@ -110,5 +113,4 @@ class DetailsTest extends \PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('label', $item);
         }
     }
-
 }

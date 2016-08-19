@@ -37,8 +37,8 @@ class MonkeylistTest extends \PHPUnit_Framework_TestCase
             ->method('getApiKey')
             ->willReturn('apikey');
 
-        $options = (object)array('lists'=>(object)array((object)array('id'=>1,'name'=>'list1'),(object)array('id'=>2,'name'=>'list2')));
-        $optionsEmpty = (object)array('nolists'=>(object)array((object)array()));
+        $options = (object)['lists'=>(object)[(object)['id'=>1,'name'=>'list1'],(object)['id'=>2,'name'=>'list2']]];
+        $optionsEmpty = (object)['nolists'=>(object)[(object)[]]];
 
         $mcapiMock->expects($this->any())
             ->method('lists')
@@ -65,7 +65,8 @@ class MonkeylistTest extends \PHPUnit_Framework_TestCase
             ->willReturn($storeMock);
 
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-        $apiMock = $objectManager->getObject('Ebizmarts\Magemonkey\Model\Api',
+        $apiMock = $objectManager->getObject(
+            'Ebizmarts\Magemonkey\Model\Api',
             [
                 'helper' => $helperMock,
                 'mcapi'  => $mcapiMock,
@@ -73,13 +74,15 @@ class MonkeylistTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $this->_options = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Config\Source\Monkeylist',
+        $this->_options = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Model\Config\Source\Monkeylist',
             [
                 'api' => $apiMock,
                 'helper' => $helperMock
             ]
         );
-        $this->_optionsEmpty = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Config\Source\Monkeylist',
+        $this->_optionsEmpty = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Model\Config\Source\Monkeylist',
             [
                 'api' => $apiEmptyMock,
                 'helper' => $helperMock
@@ -108,5 +111,4 @@ class MonkeylistTest extends \PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('label', $item);
         }
     }
-
 }

@@ -10,6 +10,7 @@
  */
 
 namespace Ebizmarts\MageMonkey\Block\Adminhtml\System\Config\Fieldset;
+
 class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework\Data\Form\Element\Renderer\RendererInterface
 {
     /**
@@ -35,8 +36,8 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
         \Magento\Framework\App\ProductMetadataInterface $productMetaData,
         \Magento\Framework\Module\ModuleList\Loader $loader,
         array $data = []
-    )
-    {
+    ) {
+    
         parent::__construct($context, $data);
         $this->_metaData = $productMetaData;
         $this->_loader = $loader;
@@ -53,14 +54,12 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
     {
         $modules = $this->_loader->load();
         $v = "";
-        if(isset($modules['Ebizmarts_MageMonkey']))
-        {
+        if (isset($modules['Ebizmarts_MageMonkey'])) {
             $v =$modules['Ebizmarts_MageMonkey']['setup_version'];
         }
         $extension = "MageMonkey;{$v}";
         $mageEdition = $this->_metaData->getEdition();
-        switch($mageEdition)
-        {
+        switch ($mageEdition) {
             case 'Community':
                 $mageEdition = 'CE';
                 break;
@@ -77,8 +76,7 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
     {
         $modules = $this->_loader->load();
         $v = "";
-        if(isset($modules['Ebizmarts_MageMonkey']))
-        {
+        if (isset($modules['Ebizmarts_MageMonkey'])) {
             $v =$modules['Ebizmarts_MageMonkey']['setup_version'];
         }
         return $v;

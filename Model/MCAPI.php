@@ -35,8 +35,8 @@ class MCAPI
     public function __construct(
         \Ebizmarts\MageMonkey\Helper\Data $helper,
         \Magento\Framework\HTTP\Adapter\Curl $curl
-    )
-    {
+    ) {
+    
         $this->_helper = $helper;
         $this->_curl = $curl;
         $this->_apiKey = $helper->getApiKey();
@@ -46,15 +46,15 @@ class MCAPI
     {
         return $this->_apiKey;
     }
-    public function load($apiKey, $secure = false){
+    public function load($apiKey, $secure = false)
+    {
         $this->_apiKey  = $apiKey;
         $this->_secure  = $secure;
         return $this;
     }
     public function setTimeout($seconds)
     {
-        if(is_int($seconds))
-        {
+        if (is_int($seconds)) {
             $this->_timeout = $seconds;
         }
     }
@@ -64,28 +64,24 @@ class MCAPI
     }
     protected function useSecure($val)
     {
-        if($val === true) {
+        if ($val === true) {
             $this->_secure  = true;
-        }
-        else
-        {
+        } else {
             $this->_secure  = false;
         }
         return $this;
     }
-    protected function callServer($use = 'GET',$method = null, $params = null,$fields = null)
+    protected function callServer($use = 'GET', $method = null, $params = null, $fields = null)
     {
         $dc = '';
         $key = '';
         list($host,$key) = $this->getHost($method, $params);
         $curl = $this->_curl;
         $curl->addOption(CURLOPT_POST, false);
-        if($fields)
-        {
+        if ($fields) {
             $curl->addOption(CURLOPT_POSTFIELDS, $fields);
         }
-        switch($use)
-        {
+        switch ($use) {
             case 'POST':
                 $curl->addOption(CURLOPT_POST, true);
                 break;
@@ -104,13 +100,12 @@ class MCAPI
                 $curl->addOption(CURLOPT_PUT, true);
 
                 break;
-
         }
 
         $curl->addOption(CURLOPT_URL, $host);
         $curl->addOption(CURLOPT_USERAGENT, 'MageMonkey/');
         $curl->addOption(CURLOPT_HEADER, true);
-        $curl->addOption(CURLOPT_HTTPHEADER, array('Content-Type: application/json','Authorization: apikey '.$key,'Cache-Control: no-cache'));
+        $curl->addOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json','Authorization: apikey '.$key,'Cache-Control: no-cache']);
         $curl->addOption(CURLOPT_RETURNTRANSFER, 1);
         $curl->addOption(CURLOPT_CONNECTTIMEOUT, 30);
         $curl->addOption(CURLOPT_TIMEOUT, $this->_timeout);
@@ -121,26 +116,24 @@ class MCAPI
         $responseCode = $curl->getInfo(CURLINFO_HTTP_CODE);
         $curl->close();
         $data           = json_decode($body[count($body)-1]);
-        switch($use)
-        {
+        switch ($use) {
             case 'DELETE':
-                if($responseCode!=204)
-                {
+                if ($responseCode!=204) {
                     throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
                 }
                 break;
             case 'PUT':
-                if($responseCode!=200) {
+                if ($responseCode!=200) {
                     throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
                 }
                 break;
             case 'POST':
-                if($responseCode!=200) {
+                if ($responseCode!=200) {
                     throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
                 }
                 break;
             case 'PATCH':
-                if($responseCode!=200) {
+                if ($responseCode!=200) {
                     throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
                 }
                 break;
@@ -150,28 +143,21 @@ class MCAPI
     protected function getHost($method, $params)
     {
         $dc = '';
-        if(strstr($this->_apiKey,'-'))
-        {
-            list($key,$dc)  = explode('-',$this->_apiKey);
-            if(!$dc)
-            {
+        if (strstr($this->_apiKey, '-')) {
+            list($key,$dc)  = explode('-', $this->_apiKey);
+            if (!$dc) {
                 $dc = 'us1';
             }
         }
         $host   = $dc.'.'.\Ebizmarts\MageMonkey\Model\Config::ENDPOINT.'/'.$this->_version;
-        if($method)
-        {
+        if ($method) {
             $host .= "/$method";
         }
-        if(is_array($params))
-        {
-            foreach($params as $pkey => $value)
-            {
-                if(is_numeric($pkey))
-                {
+        if (is_array($params)) {
+            foreach ($params as $pkey => $value) {
+                if (is_numeric($pkey)) {
                     $host .= "/$value";
-                }
-                else {
+                } else {
                     $host .= "/$pkey/$value";
                 }
             }
@@ -185,24 +171,24 @@ class MCAPI
     }
     public function lists()
     {
-        $response = $this->callServer('GET','lists');
+        $response = $this->callServer('GET', 'lists');
         return $response;
     }
     public function listMembers($listId)
     {
-        $response = $this->callServer('GET','lists',array(0=>$listId,1=>'members'));
+        $response = $this->callServer('GET', 'lists', [0=>$listId,1=>'members']);
         return $response;
     }
-    public function listCreateMember($listId,$memberData)
+    public function listCreateMember($listId, $memberData)
     {
-        $response = $this->callServer('POST','lists',array(0=>$listId,1=>'members'),$memberData);
+        $response = $this->callServer('POST', 'lists', [0=>$listId,1=>'members'], $memberData);
         $this->_helper->log('Create Member');
         $this->_helper->log($response);
         return $response;
     }
-    public function listDeleteMember($listId,$memberId)
+    public function listDeleteMember($listId, $memberId)
     {
-        $response = $this->callServer('DELETE','lists',array(0=>$listId,'members'=>$memberId));
+        $response = $this->callServer('DELETE', 'lists', [0=>$listId,'members'=>$memberId]);
         $this->_helper->log('Delete Member with Id: '.$memberId);
         $this->_helper->log($response);
         return $response;

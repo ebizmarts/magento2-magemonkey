@@ -15,7 +15,8 @@ class HintTest extends \PHPUnit_Framework_TestCase
 {
     protected $_hint;
     protected $_counter = 0;
-    protected function setUp(){
+    protected function setUp()
+    {
         $contextMock = $this->getMockBuilder('Magento\Backend\Block\Template\Context')
             ->disableOriginalConstructor()
             ->getMock();
@@ -23,13 +24,14 @@ class HintTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $productMetaDataMock->expects($this->any())->method('getVersion')->willReturn('1');
-        $productMetaDataMock->expects($this->any())->method('getEdition')->will($this->onConsecutiveCalls('Community','Enterprise'));
+        $productMetaDataMock->expects($this->any())->method('getEdition')->will($this->onConsecutiveCalls('Community', 'Enterprise'));
         $loaderMock = $this->getMockBuilder('Magento\Framework\Module\ModuleList\Loader')
             ->disableOriginalConstructor()
             ->getMock();
         $loaderMock->expects($this->any())->method('load')->willReturn(['Ebizmarts_MageMonkey'=> ['setup_version'=>3]]);
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-        $this->_hint = $objectManager->getObject('Ebizmarts\MageMonkey\Block\Adminhtml\System\Config\Fieldset\Hint',
+        $this->_hint = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Block\Adminhtml\System\Config\Fieldset\Hint',
             [
                 'context' => $contextMock,
                 'productMetaData' => $productMetaDataMock,
@@ -40,10 +42,11 @@ class HintTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPxParams()
     {
-        $this->assertEquals($this->_hint->getPxParams(),'ext=MageMonkey;3&mage=Magento CE;1&ctrl=818b95f17fc2d5e4bc1560681f1eb287');
-        $this->assertEquals($this->_hint->getPxParams(),'ext=MageMonkey;3&mage=Magento EE;1&ctrl=21280f46ed6d9789a031f06e0ce5767c');
+        $this->assertEquals($this->_hint->getPxParams(), 'ext=MageMonkey;3&mage=Magento CE;1&ctrl=818b95f17fc2d5e4bc1560681f1eb287');
+        $this->assertEquals($this->_hint->getPxParams(), 'ext=MageMonkey;3&mage=Magento EE;1&ctrl=21280f46ed6d9789a031f06e0ce5767c');
     }
-    public function testGetVersion(){
-        $this->assertEquals($this->_hint->getVersion(),3);
+    public function testGetVersion()
+    {
+        $this->assertEquals($this->_hint->getVersion(), 3);
     }
 }
