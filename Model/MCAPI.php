@@ -169,9 +169,9 @@ class MCAPI
         $response = $this->callServer();
         return $response;
     }
-    public function lists()
+    public function lists($count = 40)
     {
-        $response = $this->callServer('GET', 'lists');
+        $response = $this->callServer('GET', 'lists', ['count'=>$count]);
         return $response;
     }
     public function listMembers($listId)
