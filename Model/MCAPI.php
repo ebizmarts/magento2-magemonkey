@@ -79,7 +79,11 @@ class MCAPI
         $curl = $this->_curl;
         $curl->addOption(CURLOPT_POST, false);
         if ($fields) {
-            $curl->addOption(CURLOPT_POSTFIELDS, $fields);
+            if ($use != 'GET') {
+                $curl->addOption(CURLOPT_POSTFIELDS, $fields);
+            } else {
+                $host .= $this->addGetParams($fields);
+            }
         }
         switch ($use) {
             case 'POST':
@@ -164,6 +168,21 @@ class MCAPI
         }
         return [$host,$key];
     }
+
+    protected function addGetParams($fields)
+    {
+        $ret = '';
+        $counter = 0;
+        foreach ($fields as $key => $value) {
+            if ($counter == 0) {
+                $ret .= '?';
+            } else {
+                $ret .= '&';
+            }
+            $ret .= $key . '=' . $value;
+        }
+        return $ret;
+    }
     public function info()
     {
         $response = $this->callServer();
@@ -171,7 +190,7 @@ class MCAPI
     }
     public function lists($count = 40)
     {
-        $response = $this->callServer('GET', 'lists', ['count'=>$count]);
+        $response = $this->callServer('GET', 'lists', null, array('count'=>$count));
         return $response;
     }
     public function listMembers($listId)
