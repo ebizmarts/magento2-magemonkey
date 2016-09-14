@@ -60,6 +60,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function getApiKey($store = null)
     {
+        if (!$store) {
+            $store = $this->_storeManager->getStore();
+        }
         return $this->scopeConfig->getValue(self::XML_PATH_APIKEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
     }
     public function getDefaultList($store = null)
