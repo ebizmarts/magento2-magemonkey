@@ -41,8 +41,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Model\Logger\Logger $logger,
         \Magento\Customer\Model\GroupRegistry $groupRegistry
-    )
-    {
+    ) {
+    
         $this->_storeManager                = $storeManager;
         $this->_mlogger                     = $logger;
         $this->_groupRegistry               = $groupRegistry;
@@ -70,30 +70,33 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->_logger;
     }
-    public function log($message,$store=null)
+    public function log($message, $store = null)
     {
-        if($this->_scopeConfig->getValue(self::XML_PATH_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store))
-        {
-            $this->_mlogger->MonkeyLog($message);
+        if ($this->_scopeConfig->getValue(self::XML_PATH_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store)) {
+            $this->_mlogger->monkeyLog($message);
         }
     }
-    public function getMergeVars($customer,$store = null)
+    public function getMergeVars($customer, $store = null)
     {
-        $merge_vars = array();
+        $merge_vars = [];
         $mergeVars  = unserialize($this->_scopeConfig->getValue(self::XML_PATH_MAPPING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store));
-        foreach($mergeVars as $map)
-        {
-            $merge_vars = array_merge($merge_vars,$this->_getMergeVarsValue($map, $customer));
+
+        if (!$mergeVars) {
+            return $merge_vars;
+        }
+
+        foreach ($mergeVars as $map) {
+            $merge_vars = array_merge($merge_vars, $this->_getMergeVarsValue($map, $customer));
         }
         return $merge_vars;
     }
 
     protected function _getMergeVarsValue($map, $customer)
     {
-        $merge_vars = array();
+        $merge_vars = [];
         $customAtt = $map['magento'];
         $chimpTag  = $map['mailchimp'];
-        if($chimpTag && $customAtt) {
+        if ($chimpTag && $customAtt) {
             $key = strtoupper($chimpTag);
             switch ($customAtt) {
                 case 'fname':
@@ -121,7 +124,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'billing_address':
                 case 'shipping_address':
                     $addr = explode('_', $customAtt);
-                    $merge_vars = array_merge($merge_vars,$this->_updateMergeVars($key,ucfirst($addr[0]),$customer));
+                    $merge_vars = array_merge($merge_vars, $this->_updateMergeVars($key, ucfirst($addr[0]), $customer));
                     break;
                 case 'telephone':
                     if ($address = $customer->{'getDefaultBillingAddress'}()) {
@@ -140,23 +143,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                     break;
                 case 'group_id':
-                    $merge_vars = array_merge($merge_vars,$this->_getCustomerGroup($customer,$key));
+                    $merge_vars = array_merge($merge_vars, $this->_getCustomerGroup($customer, $key));
                     break;
                 default:
                     if (($value = (string)$customer->getData(strtolower($customAtt)))) {
                         $merge_vars[$key] = (string)$customer->getData(strtolower($customAtt));
                     }
                     break;
-
             }
             return $merge_vars;
         }
     }
-    protected function _getCustomerGroup($customer,$key)
+    protected function _getCustomerGroup($customer, $key)
     {
-        $merge_vars = array();
+        $merge_vars = [];
         $group_id = (int) $customer->getGroupId();
-        if($group_id == 0) {
+        if ($group_id == 0) {
             $merge_vars[$key] = 'NOT LOGGED IN';
         } else {
             try {
@@ -168,18 +170,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return $merge_vars;
     }
-    protected function _updateMergeVars($key,$type,$customer)
+    protected function _updateMergeVars($key, $type, $customer)
     {
-        $merge_vars = array();
+        $merge_vars = [];
         if ($address = $customer->{'getDefault' . $type . 'Address'}()) {
-            $merge_vars[$key] = array(
+            $merge_vars[$key] = [
                 'addr1' => $address->getStreetLine(1),
                 'addr2' => $address->getStreetLine(2),
                 'city' => $address->getCity(),
                 'state' => (!$address->getRegion() ? $address->getCity() : $address->getRegion()),
                 'zip' => $address->getPostcode(),
                 'country' => $address->getCountryId()
-            );
+            ];
         }
         return $merge_vars;
     }

@@ -27,7 +27,8 @@ class DataTest extends \PHPUnit_Framework_TestCase
      */
     protected $_logger;
 
-    protected function setUp(){
+    protected function setUp()
+    {
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
         $this->_scopeMock = $this->getMockBuilder('Magento\Framework\App\Config\ScopeConfigInterface')
             ->disableOriginalConstructor()
@@ -47,33 +48,36 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $groupRegistryMock = $this->getMockBuilder('Magento\Customer\Model\GroupRegistry')
             ->disableOriginalConstructor()
             ->getMock();
-        $scopeConfigMock = $this->getMock('Magento\Framework\App\Config\ScopeConfigInterface');
 
-        $this->_helper = $objectManager->getObject('Ebizmarts\MageMonkey\Helper\Data',
+        $this->_helper = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Helper\Data',
             [
                 'context'=>$contextMock,
                 'storeManager' => $storeManagerMock,
                 'logger' => $this->_logger,
-                'groupRegistry' => $groupRegistryMock,
-                'scopeConfig' => $scopeConfigMock
-            ]);
+                'groupRegistry' => $groupRegistryMock
+            ]
+        );
     }
 
-    public function testIsMonkeyEnabled(){
+    public function testIsMonkeyEnabled()
+    {
         $this->_scopeMock->expects($this->once())
             ->method('getValue')
             ->willReturn(1);
         $this->assertEquals($this->_helper->isMonkeyEnabled(), 1);
     }
 
-    public function testIsDoubleOptInEnabled(){
+    public function testIsDoubleOptInEnabled()
+    {
         $this->_scopeMock->expects($this->once())
             ->method('getValue')
             ->willReturn(1);
         $this->assertEquals($this->_helper->isDoubleOptInEnabled(), 1);
     }
 
-    public function testGetApiKey(){
+    public function testGetApiKey()
+    {
         $this->_scopeMock->expects($this->once())
             ->method('getValue')
             ->willReturn('702d18c6593a882492bb972ee77738fc-us8');
@@ -119,16 +123,36 @@ class DataTest extends \PHPUnit_Framework_TestCase
 //
 //        $ret = $this->_helper->getMergeVars($customerMock);
 //    }
+
+    /**
+     * On initial module installation there are no Magento/Mailchimp mappings configured.
+     * This breaks customer registration due to the following error: Invalid argument supplied for foreach()
+     */
+    public function testGetMergeVarsWithNoMapping()
+    {
+        $customerMock = $this->getMockBuilder('Magento\Customer\Model\Customer')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->_scopeMock->expects($this->atLeastOnce())
+            ->method('getValue')
+            ->willReturn(null);
+
+        $customerMock->expects($this->any())
+            ->method('getData')
+            ->will($this->returnCallback([$this, '_getData']));
+
+        $this->_helper->getMergeVars($customerMock);
+    }
+
+
     public function _getData($data)
     {
-        switch($data)
-        {
+        switch ($data) {
             case 'gender':
-                if($this->counter==0)
-                {
+                if ($this->counter==0) {
                     $rc = 2;
-                }
-                else {
+                } else {
                     $rc = 1;
                 }
                 $this->counter+=1;
@@ -136,7 +160,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
             case 'dob':
                 $rc = '1989-06-04';
                 break;
-            case 'firstname' :
+            case 'firstname':
                 $rc = 'fname';
                 break;
             case 'lastname':

@@ -21,7 +21,8 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
     protected $subscriberMock;
 
 
-    public function setUp(){
+    public function setUp()
+    {
 
 
         $objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
@@ -53,7 +54,7 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
         $mcapiMock = $this->getMockBuilder('Ebizmarts\MageMonkey\Model\MCAPI')
             ->disableOriginalConstructor()
             ->getMock();
-        $options = (object)array('id'=>1);
+        $options = (object)['id'=>1];
         $apiMock->expects($this->any())
             ->method('listCreateMember')
             ->willReturn($options);
@@ -65,13 +66,15 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
             ->method('listDeleteMember')
             ->willReturn(true);
 
-        $this->plugin = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Plugin\Subscriber',
-                [
+        $this->plugin = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Model\Plugin\Subscriber',
+            [
                     'helper' => $this->helperMock,
                     'customer' => $customerMock,
                     'customerSession' => $customerSessionMock,
                     'api' => $apiMock
-                ]);
+            ]
+        );
     }
 
     /**
@@ -95,7 +98,7 @@ class SubscriberTest extends \PHPUnit_Framework_TestCase
         $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
         $this->helperMock->expects($this->exactly(2))->method('isDoubleOptInEnabled')->willReturn(true);
         $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
-        $this->helperMock->expects($this->once())->method('getMergeVars')->willReturn(array('FNAME'=>'fname'));
+        $this->helperMock->expects($this->once())->method('getMergeVars')->willReturn(['FNAME'=>'fname']);
         $this->plugin->beforeSubscribeCustomerById($this->subscriberMock, 1);
     }
 }

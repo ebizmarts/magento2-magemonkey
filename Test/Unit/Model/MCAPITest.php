@@ -46,11 +46,13 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
             ->willReturn('api-key');
 
 
-        $this->_mcapi = $objectManager->getObject('Ebizmarts\Magemonkey\Model\MCAPI',
+        $this->_mcapi = $objectManager->getObject(
+            'Ebizmarts\Magemonkey\Model\MCAPI',
             [
                 'helper' => $helperMock,
                 'curl'  => $curlMock
-            ]);
+            ]
+        );
     }
 
     /**
@@ -60,7 +62,7 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
     public function testLoad()
     {
         $mcapi = $this->_mcapi->load('apikey');
-        $this->assertEquals($mcapi->getApiKey(),'apikey');
+        $this->assertEquals($mcapi->getApiKey(), 'apikey');
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::setTimeout
@@ -69,7 +71,7 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
     public function testTimeout()
     {
         $this->_mcapi->setTimeout(10);
-        $this->assertEquals($this->_mcapi->getTimeout(),10);
+        $this->assertEquals($this->_mcapi->getTimeout(), 10);
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::info
@@ -101,7 +103,7 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
      */
     public function testListCreateMember()
     {
-        $this->_mcapi->listCreateMember(1,['name'=>'name']);
+        $this->_mcapi->listCreateMember(1, ['name'=>'name']);
     }
     /**
      * @covers Ebizmarts\MageMonkey\Model\MCAPI::listDeleteMember
@@ -110,6 +112,6 @@ class MCAPITest extends \PHPUnit_Framework_TestCase
      */
     public function testListDeleteMember()
     {
-        $this->_mcapi->listDeleteMember(1,1);
+        $this->_mcapi->listDeleteMember(1, 1);
     }
 }

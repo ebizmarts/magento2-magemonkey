@@ -36,30 +36,26 @@ class Api
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Helper\Data $helper,
         \Ebizmarts\MageMonkey\Model\MCAPI $mcapi
-    )
-    {
+    ) {
+    
         $this->_helper = $helper;
         $this->_mcapi = $mcapi;
         $this->_storeManager = $storeManager;
-
     }
-    public function __call($method,$args=null)
+    public function __call($method, $args = null)
     {
-        return $this->call($method,$args);
+        return $this->call($method, $args);
     }
-    public function call($command,$args)
+    public function call($command, $args)
     {
         $result = null;
-        if($args)
-        {
-            if(is_callable(array($this->_mcapi, $command))) {
-                $reflectionMethod = new \ReflectionMethod($this->_mcapi,$command);
-                $result = $reflectionMethod->invokeArgs($this->_mcapi,$args);
+        if ($args) {
+            if (is_callable([$this->_mcapi, $command])) {
+                $reflectionMethod = new \ReflectionMethod($this->_mcapi, $command);
+                $result = $reflectionMethod->invokeArgs($this->_mcapi, $args);
             }
-        }
-        else
-        {
-            if(is_callable(array($this->_mcapi, $command))) {
+        } else {
+            if (is_callable([$this->_mcapi, $command])) {
                 $result = $this->_mcapi->{$command}();
             }
         }

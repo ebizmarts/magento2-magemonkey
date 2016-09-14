@@ -20,24 +20,25 @@ class OauthWizard extends \Magento\Config\Block\System\Config\Form\Field
     protected $_redirectUri      = "http://ebizmarts.com/magento/mailchimp/oauth2/complete_header_M2.php";
     protected $_clientId         = 976537930266;
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) {
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    {
         $originalData = $element->getOriginalData();
 
         $label = $originalData['button_label'];
 
-        $this->addData(array(
+        $this->addData([
             'button_label' => __($label),
             'button_url'   => $this->authorizeRequestUrl(),
             'html_id' => $element->getHtmlId(),
-        ));
+        ]);
         return $this->_toHtml();
     }
-    public function authorizeRequestUrl() {
+    public function authorizeRequestUrl()
+    {
 
         $url = $this->_authorizeUri;
         $redirectUri = urlencode($this->_redirectUri);
 
         return "{$url}?redirect_uri={$redirectUri}&response_type=code&client_id={$this->_clientId}";
     }
-
 }

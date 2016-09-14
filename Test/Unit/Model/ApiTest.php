@@ -12,7 +12,7 @@
  */
 namespace Ebizmarts\MageMonkey\Test\Unit\Model;
 
-class ApiTest  extends \PHPUnit_Framework_TestCase
+class ApiTest extends \PHPUnit_Framework_TestCase
 {
     protected $api;
     public function setUp()
@@ -47,12 +47,14 @@ class ApiTest  extends \PHPUnit_Framework_TestCase
             ->method('getStore')
             ->willReturn($storeMock);
 
-        $this->api = $objectManager->getObject('Ebizmarts\MageMonkey\Model\Api',
+        $this->api = $objectManager->getObject(
+            'Ebizmarts\MageMonkey\Model\Api',
             [
                 'storeManager' => $storeManagerMock,
                 'helper' => $helperMock,
                 'mcapi'  => $mcapiMock
-            ]);
+            ]
+        );
     }
 
     /**

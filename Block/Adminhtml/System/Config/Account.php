@@ -18,11 +18,10 @@ class Account extends \Magento\Config\Block\System\Config\Form\Field
         $values = $element->getValues();
 
         $html = '<ul class="checkboxes">';
-        if($values) {
-            foreach($values as $dat){
+        if ($values) {
+            foreach ($values as $dat) {
                 $html .= "<li>{$dat['value']}: {$dat['label']}</li>";
             }
-
         }
 
         $html .= '</ul>';

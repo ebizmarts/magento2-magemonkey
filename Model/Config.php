@@ -14,6 +14,6 @@ namespace Ebizmarts\MageMonkey\Model;
 
 class Config
 {
-    CONST   ENDPOINT    = 'api.mailchimp.com';
-    CONST   SCHEME      = 'https';
+    const   ENDPOINT    = 'api.mailchimp.com';
+    const   SCHEME      = 'https';
 }
