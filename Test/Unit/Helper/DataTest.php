@@ -155,7 +155,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
                 } else {
                     $rc = 1;
                 }
-                    $this->counter+=1;
+                $this->counter+=1;
                 break;
             case 'dob':
                 $rc = '1989-06-04';
