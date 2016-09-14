@@ -36,7 +36,7 @@ class MCAPI
         \Ebizmarts\MageMonkey\Helper\Data $helper,
         \Magento\Framework\HTTP\Adapter\Curl $curl
     ) {
-    
+
         $this->_helper = $helper;
         $this->_curl = $curl;
         $this->_apiKey = $helper->getApiKey();

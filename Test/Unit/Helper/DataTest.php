@@ -48,7 +48,6 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $groupRegistryMock = $this->getMockBuilder('Magento\Customer\Model\GroupRegistry')
             ->disableOriginalConstructor()
             ->getMock();
-        $scopeConfigMock = $this->getMock('Magento\Framework\App\Config\ScopeConfigInterface');
 
         $this->_helper = $objectManager->getObject(
             'Ebizmarts\MageMonkey\Helper\Data',
@@ -56,8 +55,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
                 'context'=>$contextMock,
                 'storeManager' => $storeManagerMock,
                 'logger' => $this->_logger,
-                'groupRegistry' => $groupRegistryMock,
-                'scopeConfig' => $scopeConfigMock
+                'groupRegistry' => $groupRegistryMock
             ]
         );
     }
