@@ -119,26 +119,30 @@ class MCAPI
         $body = preg_split('/^\r?$/m', $response);
         $responseCode = $curl->getInfo(CURLINFO_HTTP_CODE);
         $curl->close();
-        $data           = json_decode($body[count($body)-1]);
+        $data = json_decode($body[count($body)-1]);
+        $dataType = (isset($data->type)) ? isset($data->type) : '';
+        $dataTitle = (isset($data->title)) ? isset($data->title) : '';
+        $dataStatus = (isset($data->status)) ? isset($data->status) : '';
+        $dataDetail = (isset($data->detail)) ? isset($data->detail) : 'Wrong API Key';
         switch ($use) {
             case 'DELETE':
                 if ($responseCode!=204) {
-                    throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
+                    throw new \Exception('Type: '.$dataType.' Title: '.$dataTitle.' Status: '.$dataStatus.' Detail: '.$dataDetail);
                 }
                 break;
             case 'PUT':
                 if ($responseCode!=200) {
-                    throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
+                    throw new \Exception('Type: '.$dataType.' Title: '.$dataTitle.' Status: '.$dataStatus.' Detail: '.$dataDetail);
                 }
                 break;
             case 'POST':
                 if ($responseCode!=200) {
-                    throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
+                    throw new \Exception('Type: '.$dataType.' Title: '.$dataTitle.' Status: '.$dataStatus.' Detail: '.$dataDetail);
                 }
                 break;
             case 'PATCH':
                 if ($responseCode!=200) {
-                    throw new \Exception('Type: '.$data->type.' Title: '.$data->title.' Status: '.$data->status.' Detail: '.$data->detail);
+                    throw new \Exception('Type: '.$dataType.' Title: '.$dataTitle.' Status: '.$dataStatus.' Detail: '.$dataDetail);
                 }
                 break;
         }
@@ -147,6 +151,7 @@ class MCAPI
     protected function getHost($method, $params)
     {
         $dc = '';
+        $key = '';
         if (strstr($this->_apiKey, '-')) {
             list($key,$dc)  = explode('-', $this->_apiKey);
             if (!$dc) {
