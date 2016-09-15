@@ -1,6 +1,6 @@
 <?php
 /**
- * Ebizmarts_MAgeMonkey Magento JS component
+ * Ebizmarts_MageMonkey Magento JS component
  *
  * @category    Ebizmarts
  * @package     Ebizmarts_MageMonkey
@@ -69,7 +69,6 @@ class Subscriber
         $subscriber,
         $customerId
     ) {
-    
         $subscriber->loadByCustomerId($customerId);
         $subscriber->setImportMode(true);
         $storeId = $subscriber->getStoreId();
