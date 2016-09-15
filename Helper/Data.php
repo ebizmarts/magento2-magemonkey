@@ -28,43 +28,67 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_mlogger;
     protected $_groupRegistry;
     protected $_scopeConfig;
+    protected $_request;
+    protected $_state;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Ebizmarts\MageMonkey\Model\Logger\Logger $logger
      * @param \Magento\Customer\Model\GroupRegistry $groupRegistry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Ebizmarts\MageMonkey\Model\Logger\Logger $logger,
-        \Magento\Customer\Model\GroupRegistry $groupRegistry
+        \Magento\Customer\Model\GroupRegistry $groupRegistry,
+        \Magento\Framework\App\State $state
     ) {
     
         $this->_storeManager                = $storeManager;
         $this->_mlogger                     = $logger;
         $this->_groupRegistry               = $groupRegistry;
         $this->_scopeConfig                 = $context->getScopeConfig();
+        $this->_request                     = $context->getRequest();
+        $this->_state                       = $state;
         parent::__construct($context);
     }
 
     public function isMonkeyEnabled($store = null)
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
+        return $this->getConfigValue(self::XML_PATH_ACTIVE, $store);
     }
     public function isDoubleOptInEnabled($store = null)
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CONFIRMATION_FLAG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
+        return $this->getConfigValue(self::XML_PATH_CONFIRMATION_FLAG, $store);
     }
     public function getApiKey($store = null)
     {
-        if (!$store) {
-            $store = $this->_storeManager->getStore();
-        }
-        return $this->scopeConfig->getValue(self::XML_PATH_APIKEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
+        return $this->getConfigValue(self::XML_PATH_APIKEY, $store);
     }
+
+    public function getConfigValue($path , $storeId = null)
+    {
+        $areaCode = $this->_state->getAreaCode();
+        if ($storeId !== null) {
+            $configValue = $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+        } elseif ($areaCode == 'frontend') {
+            $frontStoreId = $this->_storeManager->getStore()->getId();
+            $configValue = $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $frontStoreId);
+        } else {
+            $storeId = $this->_request->getParam(\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $websiteId = $this->_request->getParam(\Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE);
+            if (!empty($storeId)) {
+                $configValue = $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+            } elseif (!empty($websiteId)) {
+                $configValue = $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE, $websiteId);
+            } else {
+                $configValue = $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE, 0);
+            }
+        }
+        return $configValue;
+    }
+
     public function getDefaultList($store = null)
     {
         return $this->_scopeConfig->getValue(self::XML_PATH_LIST, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
@@ -75,7 +99,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function log($message, $store = null)
     {
-        if ($this->_scopeConfig->getValue(self::XML_PATH_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store)) {
+        if ($this->getConfigValue(self::XML_PATH_LOG, $store)) {
             $this->_mlogger->monkeyLog($message);
         }
     }
