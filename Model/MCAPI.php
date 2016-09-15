@@ -120,10 +120,10 @@ class MCAPI
         $responseCode = $curl->getInfo(CURLINFO_HTTP_CODE);
         $curl->close();
         $data = json_decode($body[count($body)-1]);
-        $dataType = (isset($data->type)) ? isset($data->type) : '';
-        $dataTitle = (isset($data->title)) ? isset($data->title) : '';
-        $dataStatus = (isset($data->status)) ? isset($data->status) : '';
-        $dataDetail = (isset($data->detail)) ? isset($data->detail) : 'Wrong API Key';
+        $dataType = (isset($data->type)) ? $data->type : '';
+        $dataTitle = (isset($data->title)) ? $data->title : '';
+        $dataStatus = (isset($data->status)) ? $data->status : '';
+        $dataDetail = (isset($data->detail)) ? $data->detail : 'Wrong API Key';
         switch ($use) {
             case 'DELETE':
                 if ($responseCode!=204) {
@@ -203,17 +203,23 @@ class MCAPI
         $response = $this->callServer('GET', 'lists', [0=>$listId,1=>'members']);
         return $response;
     }
+
+    public function getMember($listId, $emailHash)
+    {
+        $response = $this->callServer('GET', 'lists', [0=>$listId,1=>'members',2=>$emailHash]);
+        return $response;
+    }
     public function listCreateMember($listId, $memberData)
     {
-        $response = $this->callServer('POST', 'lists', [0=>$listId,1=>'members'], $memberData);
         $this->_helper->log('Create Member');
+        $response = $this->callServer('POST', 'lists', [0=>$listId,1=>'members'], $memberData);
         $this->_helper->log($response);
         return $response;
     }
     public function listDeleteMember($listId, $memberId)
     {
-        $response = $this->callServer('DELETE', 'lists', [0=>$listId,'members'=>$memberId]);
         $this->_helper->log('Delete Member with Id: '.$memberId);
+        $response = $this->callServer('DELETE', 'lists', [0=>$listId,'members'=>$memberId]);
         $this->_helper->log($response);
         return $response;
     }

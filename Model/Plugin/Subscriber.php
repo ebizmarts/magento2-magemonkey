@@ -55,12 +55,15 @@ class Subscriber
         $subscriber,
         $customerId
     ) {
-    
         $subscriber->loadByCustomerId($customerId);
-        if ($subscriber->getMagemonkeyId()) {
-        //$api = $this->_api->loadByStore($subscriber->getStoreId());
-            $this->_api->listDeleteMember($this->_helper->getDefaultList(), $subscriber->getMagemonkeyId());
-            $subscriber->setMagemonkeyId('');
+        if ($subscriber->getMagemonkeyId() != null) {
+            $api = $this->_api;
+            try {
+                $api->listDeleteMember($this->_helper->getDefaultList(), $subscriber->getMagemonkeyId());
+                $subscriber->setMagemonkeyId('')->save();
+            } catch (\Exception $e) {
+                $this->_helper->log($e->getMessage());
+            }
         }
         return [$customerId];
     }
@@ -86,17 +89,20 @@ class Subscriber
             if ($mergeVars) {
                 $data = ['list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status, 'merge_fields' => $mergeVars];
             } else {
-                $data = ['list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status];
+                $data = ['list_id' => $this->_helper->getDefaultList(), 'email_address' => $customer->getEmail(), 'email_type' => 'html', 'status' => $status, 'merge_fields' => ['EMAIL'=>$customer->getEmail()]];
             }
             try {
-                $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
-                if (isset($return->id)) {
-                    $subscriber->setMagemonkeyId($return->id);
+                $emailHash = md5(strtolower($customer->getEmail()));
+                $return = $api->getMember($this->_helper->getDefaultList(), $emailHash);
+                if (!isset($return->id)) {
+                    $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
+                    if (isset($return->id)) {
+                        $subscriber->setMagemonkeyId($return->id)->save();
+                    }
                 }
+                $subscriber->setMagemonkeyId($emailHash)->save();
             } catch (\Exception $e) {
-                if (stripos($e->getMessage(), ' Status: 400 ') === false) {
-                    throw new \Exception($e->getMessage());
-                }
+                $this->_helper->log($e->getMessage());
             }
         }
         return [$customerId];
@@ -111,7 +117,6 @@ class Subscriber
 
         $isSubscribeOwnEmail = $this->_customerSession->isLoggedIn()
             && $this->_customerSession->getCustomerDataObject()->getEmail() == $email;
-
         if (!$isSubscribeOwnEmail) {
             if ($this->_helper->isMonkeyEnabled($storeId)) {
                 $subscriber->setImportMode(true);
@@ -121,16 +126,14 @@ class Subscriber
                 } else {
                     $status = 'subscribed';
                 }
-                    $data = ['list_id' => $this->_helper->getDefaultList(), 'email_address' => $email, 'email_type' => 'html', 'status' => $status];
+                $data = ['list_id' => $this->_helper->getDefaultList(), 'email_address' => $email, 'email_type' => 'html', 'status' => $status, 'merge_fields' => ['EMAIL'=>$email]];
                 try {
                     $return = $api->listCreateMember($this->_helper->getDefaultList(), json_encode($data));
                     if (isset($return->id)) {
                         $subscriber->setMagemonkeyId($return->id);
                     }
                 } catch (\Exception $e) {
-                    if (stripos($e->getMessage(), ' Status: 400 ') === false) {
-                        throw new \Exception($e->getMessage());
-                    }
+                    $this->_helper->log($e->getMessage());
                 }
             }
         }
@@ -140,7 +143,6 @@ class Subscriber
     public function beforeUnsubscribe(
         $subscriber
     ) {
-    
         if ($subscriber->getMagemonkeyId()) {
             $this->_api->listDeleteMember($this->_helper->getDefaultList(), $subscriber->getMagemonkeyId());
             $subscriber->setMagemonkeyId('');
