@@ -33,12 +33,18 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->_scopeMock = $this->getMockBuilder('Magento\Framework\App\Config\ScopeConfigInterface')
             ->disableOriginalConstructor()
             ->getMock();
+        $requestMock = $this->getMockBuilder('Magento\Framework\App\RequestInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
         $contextMock = $this->getMockBuilder('Magento\Framework\App\Helper\Context')
             ->disableOriginalConstructor()
             ->getMock();
         $contextMock->expects($this->any())
             ->method('getScopeConfig')
             ->willReturn($this->_scopeMock);
+        $contextMock->expects($this->any())
+            ->method('getRequest')
+            ->willReturn($requestMock);
         $storeManagerMock = $this->getMockBuilder('Magento\Store\Model\StoreManagerInterface')
             ->disableOriginalConstructor()
             ->getMock();
@@ -48,6 +54,9 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $groupRegistryMock = $this->getMockBuilder('Magento\Customer\Model\GroupRegistry')
             ->disableOriginalConstructor()
             ->getMock();
+        $stateMock = $this->getMockBuilder('Magento\Framework\App\State')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->_helper = $objectManager->getObject(
             'Ebizmarts\MageMonkey\Helper\Data',
@@ -55,7 +64,8 @@ class DataTest extends \PHPUnit_Framework_TestCase
                 'context'=>$contextMock,
                 'storeManager' => $storeManagerMock,
                 'logger' => $this->_logger,
-                'groupRegistry' => $groupRegistryMock
+                'groupRegistry' => $groupRegistryMock,
+                'state' => $stateMock
             ]
         );
     }
