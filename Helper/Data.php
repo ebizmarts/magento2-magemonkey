@@ -67,7 +67,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getConfigValue(self::XML_PATH_APIKEY, $store);
     }
 
-    public function getConfigValue($path , $storeId = null)
+    public function getConfigValue($path, $storeId = null)
     {
         $areaCode = $this->_state->getAreaCode();
         if ($storeId !== null) {
