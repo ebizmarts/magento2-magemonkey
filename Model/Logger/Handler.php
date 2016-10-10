@@ -11,7 +11,7 @@
 
 namespace Ebizmarts\MageMonkey\Model\Logger;
 
-use Monolog;
+use Monolog\Logger as EbizmartsLogger;
 
 class Handler extends \Magento\Framework\Logger\Handler\Base
 {
@@ -25,5 +25,5 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
      * Logging level
      * @var int
      */
-    protected $loggerType = Logger::INFO;
+    protected $loggerType = EbizmartsLogger::INFO;
 }
