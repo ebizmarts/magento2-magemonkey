@@ -120,7 +120,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     protected function _getMergeVarsValue($map, $customer)
     {
-        $merge_vars = [];
+        $merge_vars = array();
         $customAtt = $map['magento'];
         $chimpTag  = $map['mailchimp'];
         if ($chimpTag && $customAtt) {
