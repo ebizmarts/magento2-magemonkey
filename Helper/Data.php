@@ -178,8 +178,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                     break;
             }
-            return $merge_vars;
         }
+        return $merge_vars;
     }
     protected function _getCustomerGroup($customer, $key)
     {
