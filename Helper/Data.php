@@ -44,7 +44,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Customer\Model\GroupRegistry $groupRegistry,
         \Magento\Framework\App\State $state
     ) {
-    
+
         $this->_storeManager                = $storeManager;
         $this->_mlogger                     = $logger;
         $this->_groupRegistry               = $groupRegistry;
@@ -58,10 +58,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getConfigValue(self::XML_PATH_ACTIVE, $store);
     }
+    
     public function isDoubleOptInEnabled($store = null)
     {
         return $this->getConfigValue(self::XML_PATH_CONFIRMATION_FLAG, $store);
     }
+
     public function getApiKey($store = null)
     {
         return $this->getConfigValue(self::XML_PATH_APIKEY, $store);
@@ -93,16 +95,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->_scopeConfig->getValue(self::XML_PATH_LIST, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $store);
     }
+
     public function getLogger()
     {
         return $this->_logger;
     }
+
     public function log($message, $store = null)
     {
         if ($this->getConfigValue(self::XML_PATH_LOG, $store)) {
             $this->_mlogger->monkeyLog($message);
         }
     }
+
     public function getMergeVars($customer, $store = null)
     {
         $merge_vars = [];
@@ -178,9 +183,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                     break;
             }
-            return $merge_vars;
         }
+
+        return $merge_vars;
     }
+
     protected function _getCustomerGroup($customer, $key)
     {
         $merge_vars = [];
@@ -195,8 +202,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 throw new \Exception($e->getMessage());
             }
         }
+
         return $merge_vars;
     }
+
     protected function _updateMergeVars($key, $type, $customer)
     {
         $merge_vars = [];
@@ -210,6 +219,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'country' => $address->getCountryId()
             ];
         }
+
         return $merge_vars;
     }
 }
