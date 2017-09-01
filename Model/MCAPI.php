@@ -158,7 +158,7 @@ class MCAPI
                 $dc = 'us1';
             }
         }
-        $host   = $dc.'.'.\Ebizmarts\MageMonkey\Model\Config::ENDPOINT.'/'.$this->_version;
+        $host   = 'https://'.$dc.'.'.\Ebizmarts\MageMonkey\Model\Config::ENDPOINT.'/'.$this->_version;
         if ($method) {
             $host .= "/$method";
         }
